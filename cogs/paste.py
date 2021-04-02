@@ -30,10 +30,13 @@ class Paste(commands.Cog):
             "markdown": "md"
         }
         ext = conv.get(language.lower())
-        return ext or language.lower()
+        if ext:
+            return ext
+        else:
+            return language.lower()
 
     async def create_gist(self, ctx, language: str, code: str) -> dict:
-        headers = {'Authorization': f'token {self.git_key}'}
+        headers = {'Authorization': f"token {self.git_key}"}
         params = {'scope': 'gist'}
         payload = {
             "description": "Automated GIST created through discord",
@@ -51,7 +54,7 @@ class Paste(commands.Cog):
                 params = params, 
                 data = json.dumps(payload)
             ) as r:
-
+                
                 if r.status in range(200, 299):
                     return await r.json()
 
