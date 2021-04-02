@@ -52,11 +52,11 @@ class Errorhandler(commands.Cog):
         elif isinstance(error, commands.CommandOnCooldown):
             await ctx.send(f'This command is on cooldown please try again after `{round(error.retry_after)}` seconds!')
 
-        #elif isinstance(error, discord.Forbidden):
-           # await ctx.message.add_reaction('❌')
+        elif isinstance(error, discord.Forbidden):
+            await ctx.message.add_reaction('❌')
 
-        #elif isinstance(error, discord.HTTPException):
-           # await ctx.message.add_reaction('‼️')
+        elif isinstance(error, discord.HTTPException):
+            await ctx.message.add_reaction('‼️')
 
         elif isinstance(error, commands.CommandNotFound):
             pass
