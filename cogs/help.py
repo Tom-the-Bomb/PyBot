@@ -104,6 +104,10 @@ class Utility(commands.Cog):
                 name = "━━━━━ Description ━━━━━", 
                 value = command.description or "-"
             )
+
+            if isinstance(command, commands.Group):
+                embed.add_field(name="Subcommands", value=" • " + "\n • ".join([c.qualified_name for c in command.commands]), inline=False)
+                
             embed.set_footer(
                 text="[ ]  is optional and < > is required", icon_url=self.PyBot.user.avatar_url
             )
