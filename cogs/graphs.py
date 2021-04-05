@@ -9,13 +9,12 @@ import math
 
 matplotlib.use("agg")
 
-plt.style.use(["fast", "fivethirtyeight", "ggplot"])
-
 def data_check(data):
     data = [a.isdigit() for a in data]
     return all(data)
 
 def bar(*args):
+    plt.style.use(["fast", "fivethirtyeight", "ggplot"])
     buffer = BytesIO()
     args1 = [int(i) for i in args]
     plt.bar(args, args1)
@@ -26,16 +25,20 @@ def bar(*args):
     return image
 
 def pie(*args):
+    plt.style.use(["fast", "fivethirtyeight", "ggplot"])
+    plt.style.use("Solarize_Light2")
     buffer = BytesIO()
     args1 = [int(i) for i in args]
     plt.pie(args1, labels=args, autopct = '%1.1f%%', shadow = True)
-    plt.savefig(buffer)
+    plt.savefig(buffer, transparent=True)
     plt.close()
     buffer.seek(0)
     image = discord.File(buffer, "graph.png")
     return image
 
 def scatter(*args):
+    plt.style.use(["fast", "fivethirtyeight", "ggplot"])
+    plt.style.use("bmh")
     buffer = BytesIO()
     args1 = [int(i) for i in args]
     plt.scatter(args, args1, color='r')
@@ -46,6 +49,8 @@ def scatter(*args):
     return image
 
 def line(*args):
+    plt.style.use(["fast", "fivethirtyeight", "ggplot"])
+    plt.style.use("bmh")
     buffer = BytesIO()
     args1 = [int(i) for i in args]
     plt.plot(args, args1, 'o-g')
@@ -56,12 +61,14 @@ def line(*args):
     return image
 
 def contour(*args):
+    plt.style.use(["fast", "fivethirtyeight", "ggplot"])
+    plt.style.use("dark_background")
     buffer = BytesIO()
     args1 = [int(i) for i in args]
     X, Y = np.meshgrid(args1, args1)
     Z = np.sqrt(X**2 + Y**2)
     plt.contourf(X, Y, Z)
-    plt.savefig(buffer)
+    plt.savefig(buffer, transparent=True)
     plt.close()
     buffer.seek(0)
     image = discord.File(buffer, "graph.png")

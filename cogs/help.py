@@ -118,15 +118,16 @@ class Utility(commands.Cog):
         embed = discord.Embed(
             title='Info', 
             description=f'''
-            PyBot - bot v1.2
-            ━━━━━━━━━━━━━━
-             - Owner: `🐡Tσɱ ƚԋҽ BσɱႦ🦈 #7121`
-             - Language: `Python 3.8.7`
-             - Library: `Discord.py {discord.__version__}`
-             - Uptime: `{d} days, {h} hrs, {m} mins, {s} sec`
-             - WS latency: `{round(self.PyBot.latency*1000)} ms`
-             - Cogs: `{len(self.PyBot.cogs)}`
-            ━━━━━━━━━━━━━━
+PyBot • bot v1.2
+━━━━━━━━━━━━━━
+    • Owner: `🐡Tσɱ ƚԋҽ BσɱႦ🦈 #7121`
+    • Language: `Python 3.8.7`
+    • Library: `Discord.py {discord.__version__}`
+    • Uptime: `{d} days, {h} hrs, {m} mins, {s} sec`
+    • WS latency: `{round(self.PyBot.latency*1000)} ms`
+    • Cogs: `{len(self.PyBot.cogs)}`
+━━━━━━━━━━━━━━
+**[Website](https://tom-the-bomb.github.io/PyBot-website/)** | **[Invite](https://dsc.gg/pybot)**
             ''', 
             color=discord.Color.gold()
         )
@@ -221,17 +222,17 @@ class Utility(commands.Cog):
     async def userinfo(self, ctx, member: discord.Member = None):
         m = member or ctx.author
         conv = {
-            'hypesquad_bravery': "<:bravery:826088806787973131>", 
-            'hypesquad_balance': "<:balance:826088836043636746>", 
+            'hypesquad_bravery'   : "<:bravery:826088806787973131>", 
+            'hypesquad_balance'   : "<:balance:826088836043636746>", 
             'hypesquad_brilliance': "<:brilliance:826087059306709003>", 
-            'early_supporter': "<:supporter:826088864821149696>", 
+            'early_supporter'     : "<:supporter:826088864821149696>", 
             'verified_bot_developer': "<:VerifiedDeveloper:726578447232532530>", 
-            'partner': "<:partner:826090409074622464>", 
-            'staff': "<:staff:826091741509320764>", 
-            'bug_hunter': "<:bughunter:826092076630016050>", 
-            'bug_hunter_level_2': "<:bughunter2:826092998860472370>",
-            'verified_bot': "<:verified:826092596798423070>", 
-            'system': "<:system:826093796559159336>",
+            'partner'             : "<:partner:826090409074622464>", 
+            'staff'               : "<:staff:826091741509320764>", 
+            'bug_hunter'          : "<:bughunter:826092076630016050>", 
+            'bug_hunter_level_2'  : "<:bughunter2:826092998860472370>",
+            'verified_bot'        : "<:verified:826092596798423070>", 
+            'system'              : "<:system:826093796559159336>",
         }
         status = {
             discord.Status.online:'<:status_online:596576749790429200>', 
@@ -270,6 +271,16 @@ class Utility(commands.Cog):
         embed.set_footer(text=f"Guild: {m.guild.name}", icon_url=m.guild.icon_url)
         return await ctx.reply(embed=embed, allowed_mentions=discord.AllowedMentions.none())
 
+    @commands.command(name="vote", description="vote for me!", aliases=["botlists"])
+    async def vote(self, ctx):
+        embed = discord.Embed(title="Vote for me!")
+        embed.description = (
+            "**[discord.ly](https://discord.ly/pybot)**\n"
+            "**[botsfordiscord](https://botsfordiscord.com/bot/819345387524456468)**\n"
+            "**[Top.gg](https://top.gg/bot/819345387524456468)**\n"
+        )
+        return await ctx.send(embed=embed)
+
     @commands.command(name="reminder", aliases=["remind"], description="sets a reminder for you")
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def reminder(self, ctx, time: TimeConverter, *, content: str):
@@ -301,6 +312,7 @@ class Utility(commands.Cog):
         )
 
     @commands.command(name="pprint", description="pretty-formats JSON", aliases=["prettyprint"])
+    @commands.cooldown(1, 2, commands.BucketType.user)
     async def pprint(self, ctx, *, code: str):
 
         if code.startswith("```"):
