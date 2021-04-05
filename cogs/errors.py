@@ -60,6 +60,10 @@ class Errorhandler(commands.Cog):
 
         elif isinstance(error, commands.CommandNotFound):
             pass
+
+        elif isinstance(error, commands.NSFWChannelRequired):
+            await ctx.send("This command is nsfw only since its a google-image command and google is uh")
+            
         else:
             raise error
 
