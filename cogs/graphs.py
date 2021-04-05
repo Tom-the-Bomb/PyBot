@@ -9,6 +9,8 @@ import math
 
 matplotlib.use("agg")
 
+plt.style.use(["fast", "fivethirtyeight", "ggplot"])
+
 def data_check(data):
     data = [a.isdigit() for a in data]
     return all(data)

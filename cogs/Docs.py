@@ -127,16 +127,25 @@ class DocScraper:
         self._rtfm_cache = cache
 
     async def do_rtfm(self, ctx, key, obj):
+        key = key.lower()
         page_types = {
-            'latest': 'https://discordpy.readthedocs.io/en/latest',
-            'latest-jp': 'https://discordpy.readthedocs.io/ja/latest',
-            'python': 'https://docs.python.org/3',
-            'python-jp': 'https://docs.python.org/ja/3',
+            'python' : 'https://docs.python.org/3',
+            'dpy'    : 'https://discordpy.readthedocs.io/en/latest',
+            'pillow' : 'https://pillow.readthedocs.io/en/stable/',
+            "aiohttp": 'https://docs.aiohttp.org/en/stable/', 
+            "flask"  : 'https://flask-doc.readthedocs.io/en/latest/', 
+            "requests": 'https://docs.python-requests.org/en/master/', 
+            "wavelink": 'https://wavelink.readthedocs.io/en/latest/', 
+            "selenium": 'https://selenium-python.readthedocs.io/', 
+            "twitchio": 'https://twitchio.readthedocs.io/en/latest/',
+            "praw"    : "https://praw.readthedocs.io/en/latest/", 
         }
 
+        if key not in page_types:
+            return await ctx.send(f"That lib is not supported by the bot yet...\nTry one of these instead: `{'` `'.join(list(page_types.keys())[1:])}`")
+
         if obj is None:
-            await ctx.send(page_types[key])
-            return
+            return await ctx.send(page_types[key])
 
         if not hasattr(self, '_rtfm_cache'):
             await self.build_rtfm_lookup_table(page_types)
@@ -159,10 +168,10 @@ class DocScraper:
 
         e = discord.Embed(colour=discord.Colour.gold())
         if len(matches) == 0:
-            return await ctx.send('Could not find anything. Sorry.')
+            return await ctx.send('No results were found...')
         
-        e.title = "Python-3 Documentation"
-        e.url = "https://docs.python.org/3/"
+        e.title = f'{key.replace("dpy", "discord.py")} Documentation'
+        e.url = page_types.get(key)
         e.description = f"**Results for | `{obj}`**\n━━━━━━━━━━━━━━\n"+'\n'.join(f'[`{key}`]({url})' for key, url in matches)
         e.set_thumbnail(url=self.thumbnail)
         await ctx.send(embed=e)
@@ -172,11 +181,27 @@ class Documentation(commands.Cog):
     def __init__(self, client):
         self.PyBot = client
 
-    @commands.command(name="docs", description="Quick search in the python-3 docs for the thing you;re looking for")
+    @commands.group(
+        name="docs", 
+        description="Quick search in the python-3 docs for the thing you're looking for", 
+        invoke_without_command=True
+    )
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def docs(self, ctx, *, query: str):
         
         docs = DocScraper()
         return await docs.do_rtfm(ctx, "python", query)
+
+    @docs.command(
+        name="lib", 
+        description="Quick search for an item in a provided lib docs\nEx: `%docs lib pillow draw`\nwill search for 'draw' in the pillow docs",
+        aliases=["module"]
+    )
+    @commands.cooldown(1, 3, commands.BucketType.user)
+    async def lib(self, ctx, lib: str, *, query: str):
+
+        docs = DocScraper()
+        return await docs.do_rtfm(ctx, lib, query)
             
 def setup(client):
     client.add_cog(Documentation(client))

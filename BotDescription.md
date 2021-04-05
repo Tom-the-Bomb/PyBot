@@ -12,10 +12,10 @@
 ---
 
 ### Also offers code compilation for other languages too! (for more flexibility)
-- Devs often know more than 1 language so ;)
+- Often developers know more than one language so this will be a useful addon to python stuff
 Languages include: `javascript` `java` `c` `cpp` `go` `csharp` `typescript` `ruby` `rust` `perl` `php` `bash` `swift` `kotlin` `brainfuck` `lua` `haskell` `nim` `dash` `d`
 
-- The bot also has a **markdown to html** converter `%mdtohtml` and a **Html to markdown** converter `%htmltomd` !!
+- The bot also has a **markdown to html** converter `%mdtohtml` and a **Html to markdown** converter `%htmltomd`
 ---
 **Utility Commands**
 
@@ -23,7 +23,7 @@ Languages include: `javascript` `java` `c` `cpp` `go` `csharp` `typescript` `rub
 - A `Todo system` for keeping track of things you need to do! check the list with `%todo` and ( includes subcommands for managing the list! )
 
 ---
-Also provides some other useful commands such as `serverinfo` `avatar` etc.
+Also provides some other useful commands such as `serverinfo` `avatar` `userinfo` etc.
 - A set of **graphing** commands such as `%bar` `%line` `%pie` to plot  graphs based on user-inputted data!
 - This bot is still under active development -> **if you have any suggestions of questions please join our support server though `%support`**
 - Invite link - `%invite`

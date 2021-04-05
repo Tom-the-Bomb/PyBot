@@ -5,6 +5,7 @@ from datetime import datetime as dt
 import re
 
 import pyshorteners
+import json
 
 
 time_regex = re.compile(r"(\d{1,5}(?:[.,]?\d{1,5})?)([smhd])")
@@ -298,6 +299,19 @@ class Utility(commands.Cog):
         ), 
         allowed_mentions= discord.AllowedMentions.none()
         )
+
+    @commands.command(name="pprint", description="pretty-formats JSON", aliases=["prettyprint"])
+    async def pprint(self, ctx, *, code: str):
+
+        if code.startswith("```"):
+            lines = code.split("\n")
+            if lines[0].startswith("```"):
+                code = code.strip(lines[0])
+                code = code.strip("```")
+        
+        j = json.loads(code)
+        j = json.dumps(j, indent=4, sort_keys=True)
+        return await ctx.send(f"```json\n{j or '-'}\n```")
 
 def setup(client):
     client.add_cog(Utility(client))

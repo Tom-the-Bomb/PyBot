@@ -7,9 +7,46 @@ from bs4 import BeautifulSoup
 
 import unicodedata
 import re
+import random
 
 from RevImg import RevImg
 import async_cse
+
+class LanguageConv(commands.Converter):
+    async def convert(self, ctx, language):
+        lang = language.lower()
+        conv = {
+            "arabic": "ara",
+            "bulgarian": "bul",
+            "chinese": "chs",
+            "croatian": "hrv",
+            "czech": "cze",
+            "danish": "dan",
+            "dutch": "dut",
+            "english": "eng",
+            "finnish": "fin",
+            "french": "fre",
+            "german": "ger",
+            "greek": "gre",
+            "hungarian": "hun",
+            "korean": "kor",
+            "italian": "ita",
+            "japanese": "jpn",
+            "polish": "pol",
+            "portuguese": "por",
+            "russian": "rus",
+            "slovenian": "slv",
+            "spanish": "spa",
+            "swedish": "swe",
+            "turkish": "tur",
+        }
+        if not language:
+            return "eng"
+        elif lang in conv.values():
+            return lang
+        else:
+            res = "eng" if not conv.get(lang) else conv.get(lang)
+            return res
 
 class PaginatorSource(menus.ListPageSource):
 
@@ -157,20 +194,21 @@ class GooglePaginator(menus.ListPageSource):
 class Search(commands.Cog):
 
     def __init__(self, client):
-        self.PyBot = client
-        self.stack_auth = {
+        self.PyBot       = client
+        self.stack_auth  = {
             "access_token": self.PyBot.config["STACKOVERFLOW"]["KEY"]
         }
         self.git_headers = {
             "Authorization": self.PyBot.config["GITHUB"]["SECRET"]
         }
-        self.GKeys = self.PyBot.config["GOOGLE"]
+        self.GKeys   = self.PyBot.config["GOOGLE"]
+        self.ocr     = self.PyBot.config["OCR"]
         self._google = async_cse.Search([self.GKeys["KEY1"], self.GKeys["KEY2"], self.GKeys["KEY3"], self.GKeys["KEY4"], self.GKeys["KEY5"]])
-        self.pep_url = "https://www.python.org/dev/peps/"
+        self.pep_url    = "https://www.python.org/dev/peps/"
         self.github_url = "https://api.github.com/"
-        self.stack_url = "https://api.stackexchange.com/2.2/"
-        self.pypi_logo = "https://cdn.discordapp.com/attachments/381963689470984203/814267252437942272/pypi.png"
-        self.pep_image = "https://www.python.org/static/opengraph-icon-200x200.png"
+        self.stack_url  = "https://api.stackexchange.com/2.2/"
+        self.pypi_logo  = "https://cdn.discordapp.com/attachments/381963689470984203/814267252437942272/pypi.png"
+        self.pep_image  = "https://www.python.org/static/opengraph-icon-200x200.png"
 
     @commands.command(name="pypi", description="searches pypi.org for a package")
     @commands.cooldown(1, 7, commands.BucketType.user)
@@ -317,6 +355,7 @@ class Search(commands.Cog):
                     return await ctx.send("Oops an error has occured")
 
     @commands.command(name="pep", description="Provides informataion on a PEP number")
+    @commands.cooldown(1, 2, commands.BucketType.user)
     async def pep(self, ctx, *, number: int):
         num = str(number)
         url = self.pep_url + f"pep-{'0'*(4-len(num))}" + num
@@ -338,11 +377,8 @@ class Search(commands.Cog):
                         
                         desc = "```ini\n"
                         for a, b, in zip(elements, elements2):
-                            try:
-                                __ = f" • [ {a[0]} ] : {b.contents[0]}\n"
-                                desc += f" • [ {a[0]} ] :\n-\n"
-                            except:
-                                desc += f" • [ {a[0]} ] :\n{b}\n"
+                            desc += f" • [ {a[0]} ] :\n{b}\n"
+
                         desc += "\n```"
                         embed = discord.Embed(
                             title=soup.title.contents[0],
@@ -359,6 +395,7 @@ class Search(commands.Cog):
                     return await ctx.send("That PEP does not exist!")
 
     @commands.command(name="char", aliases=["charinfo", "unicode"], description="Unicode character info")
+    @commands.cooldown(1, 2, commands.BucketType.user)
     async def char(self, ctx, *, characters: str):
 
         custom_emoji = re.match(r"<(a?):(\w+):(\d+)>", characters)
@@ -444,6 +481,27 @@ class Search(commands.Cog):
         except async_cse.NoResults:
             embed = discord.Embed(description='No results were found for that query... :(')
             return await ctx.send(embed=embed)
+
+    @commands.command(
+        name        = "imagetotext", 
+        aliases     = ["ocr"], 
+        description = "Extracts text from a provided image\n(if the text in an image is a different language you can specify the language after the url and it will detect text in that language and not english)"
+    )
+    @commands.cooldown(1, 12, commands.BucketType.user)
+    async def imagetotext(self, ctx, url: str, lang: typing.Optional[LanguageConv] = "eng"):
+
+        if not url.startswith("https://") and not url.startswith("http://"):
+            return await ctx.send("urls must start with http or https.")
+
+        else:
+            key = self.ocr[random.choice(("KEY", "KEY2"))]
+            async with ClientSession() as session:
+                async with session.get("https://api.ocr.space/parse/imageurl", params={"apikey": key, "url": url, "language": lang}) as r:
+                    if r.status in range(200, 299):
+                        data = await r.json()
+                        return await ctx.send(f'```\n{data["ParsedResults"][0]["ParsedText"] or "[Nothing was found]"}\n```')
+                    else:
+                        return await ctx.send(r.status)
             
 def setup(client):
     client.add_cog(Search(client))
