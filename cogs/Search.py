@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands, menus
 import typing
+import textwrap
 
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
@@ -88,32 +89,33 @@ class RepoPaginator(menus.ListPageSource):
         super().__init__(entries, per_page=per_page)
 
     async def format_page(self, menu: menus.Menu, page):
+        newline = "\n"
         notfound = "https://github.com/404"
         owner = page["owner"]
         embed = discord.Embed(
             title = page["full_name"],
             description = f'''
 ```ini
- • [ id ] :       {page["id"]}
- • [ Stars ] :    {page["stargazers_count"]}
- • [ Watchers ] : {page["watchers"]}
- • [ Score ] :    {page["score"]}
- • [ forks ] :    {page["forks"]}
- • [ issues ] :   {page["open_issues"]}
- • [ Language ] : {page["language"]}
- • [ size ] :     {page["size"]}
+ • [ id ]           : {page["id"]}
+ • [ Stars ]        : {page["stargazers_count"]}
+ • [ Watchers ]     : {page["watchers"]}
+ • [ Score ]        : {page["score"]}
+ • [ forks ]        : {page["forks"]}
+ • [ issues ]       : {page["open_issues"]}
+ • [ Language ]     : {page["language"]}
+ • [ size ]         : {page["size"]}
+ • [ Created-at ]   : {page["created_at"][:10]}
+ • [ Last-pushed ]  : {page["pushed_at"][:10]}
+ • [ Last-updated ] : {page["updated_at"][:10]}
 ```
-**━━━━━━━━ Description ━━━━━━━━**
-{page["description"]}
+**Description**
+{newline.join(textwrap.wrap(page["description"] or "-", width=32))}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━
 **[clone url]({page["clone_url"] or notfound})**
 **[teams url]({page["teams_url"] or notfound})**
 **[forks url]({page["forks_url"] or notfound})**
 **[homepage]({page["homepage"] or notfound})**
-Created-at: `{page["created_at"][:10]}`
-Last-pushed: `{page["pushed_at"][:10]}`
-Last-updated: `{page["updated_at"][:10]}`
 ''',
             url = page["html_url"],
             color = discord.Color.greyple(),
@@ -139,10 +141,10 @@ class UserPaginator(menus.ListPageSource):
             title = page["login"],
             description = f'''
 ```ini
- • [ id ] :      {page["id"]}
- • [ Type ] :    {page["type"]}
- • [ admin? ] :  {page["site_admin"]}
- • [ score ] :   {page["score"]}
+ • [ id ]      : {page["id"]}
+ • [ Type ]    : {page["type"]}
+ • [ admin? ]  : {page["site_admin"]}
+ • [ score ]   : {page["score"]}
  • [ node-id ] : {page["node_id"]}
 ```
 **[Repositories url]({page["repos_url"] or notfound})**
