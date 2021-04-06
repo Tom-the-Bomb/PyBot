@@ -21,7 +21,7 @@ class PythonBot(commands.AutoShardedBot):
 
     def __init__(self, *args, **kwargs):
         super().__init__(**kwargs)
-        os.environ["JISHAKU_HIDE"] = "True"
+
         self.config = load_config()
         self.BotToken = self.config["TOKEN"]
         self._ClientSecret = self.config["SECRET"]
