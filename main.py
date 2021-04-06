@@ -21,7 +21,7 @@ class PythonBot(commands.AutoShardedBot):
 
     def __init__(self, *args, **kwargs):
         super().__init__(**kwargs)
-
+        os.environ["JISHAKU_HIDE"] = "True"
         self.config = load_config()
         self.BotToken = self.config["TOKEN"]
         self._ClientSecret = self.config["SECRET"]
@@ -36,6 +36,7 @@ class PythonBot(commands.AutoShardedBot):
 
         await self.wait_until_ready()
         try:
+            self.load_extension("jishaku")
             for filename in os.listdir("./cogs"):
                 if filename.endswith(".py"):
                     self.load_extension(f"cogs.{filename[:-3]}")

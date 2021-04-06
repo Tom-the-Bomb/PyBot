@@ -54,7 +54,8 @@ class Utility(commands.Cog):
 
     def __init__(self, client):
         self.PyBot = client
-        self.hidden_commands = {"load", "unload", "reload"}
+        self.hidden_commands = {"load", "unload", "reload", "jishaku"}
+        self.hidden_cogs = {"Errorhandler", "Developer", "Jishaku"}
 
     async def num_status(self, guild):
 
@@ -80,7 +81,7 @@ class Utility(commands.Cog):
             sep = '\n- '
             description = [
                 f"**{cog.qualified_name}**" + f"```diff\n- {sep.join([c.qualified_name for c in cog.walk_commands()])}\n```" for cog in [
-                    self.PyBot.get_cog(c) for c in self.PyBot.cogs if c not in {"Errorhandler", "Developer"}
+                    self.PyBot.get_cog(c) for c in self.PyBot.cogs if c not in self.hidden_cogs
                 ]
             ]
             pages = HelpPaginator(ctx, bot=self.PyBot, entries=description)
@@ -107,7 +108,7 @@ class Utility(commands.Cog):
 
             if isinstance(command, commands.Group):
                 embed.add_field(name="Subcommands", value=" • " + "\n • ".join([c.qualified_name for c in command.commands]), inline=False)
-                
+
             embed.set_footer(
                 text="[ ]  is optional and < > is required", icon_url=self.PyBot.user.avatar_url
             )
@@ -138,7 +139,7 @@ PyBot • bot v1.2
         embed.set_thumbnail(url=self.PyBot.user.avatar_url)
         embed.add_field(name='👤 - Members -', value=await self.PyBot.NumMembers(), inline=False)
         embed.add_field(name='🏠 - Server count - ', value=len(self.PyBot.guilds), inline=False)
-        embed.add_field(name='📨 - Command Count - ', value=len([c for c in self.PyBot.walk_commands()]), inline=False)
+        embed.add_field(name='📨 - Command Count - ', value=len([c for c in self.PyBot.walk_commands() if c.cog.qualified_name not in self.hidden_cogs]), inline=False)
         return await ctx.send(embed=embed)
 
     

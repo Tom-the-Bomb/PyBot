@@ -43,7 +43,7 @@ class Errorhandler(commands.Cog):
 
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(
-                f'Missing `{error.param}` argument in the command.\n**Usage:** `%{ctx.invoked_with} {ctx.command.signature}`'
+                f'Missing `{str(error.param).split(":")[0]}` argument in the command.\n**Usage:** `%{ctx.command.qualified_name} {ctx.command.signature}`'
             )
 
         elif isinstance(error, commands.BadArgument):
