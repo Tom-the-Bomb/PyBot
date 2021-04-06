@@ -132,7 +132,7 @@ PyBot • bot v1.2
     • WS latency: `{round(self.PyBot.latency*1000)} ms`
     • Cogs: `{len(self.PyBot.cogs)}`
 ━━━━━━━━━━━━━━
-**[Website](https://tom-the-bomb.github.io/PyBot-website/)** | **[Invite](https://dsc.gg/pybot)**
+**[Website](https://tom-the-bomb.github.io/Pybot-/)** | **[Invite](https://dsc.gg/pybot)**
             ''', 
             color=discord.Color.gold()
         )
