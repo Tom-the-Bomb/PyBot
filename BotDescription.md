@@ -33,4 +33,6 @@ Also provides some other useful commands such as `serverinfo` `avatar` `userinfo
 - This bot is still under active development -> **if you have any suggestions of questions please join our support server though `%support`**
 - Invite link - `%invite`
 - Vote for me! - `%vote`
+- Help - `%help`
+- Info - `%info`
 ---
