@@ -95,7 +95,7 @@ class Utility(commands.Cog):
                 title = "%" + command.qualified_name,
                 description = f'''
 **Usage** 
-```css\n%{command.qualified_name} {command.signature}\n```
+```powershell\n%{command.qualified_name} {command.signature}\n```
 **Aliases**
 `{", ".join(command.aliases) if command.aliases else "no aliases"}`
 ''', 
