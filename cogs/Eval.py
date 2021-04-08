@@ -10,8 +10,7 @@ import time
 import markdown
 import markdownify
 
-class ApiError(Exception):
-    pass
+from jishaku import codeblocks
 
 class Piston:
     
@@ -111,19 +110,16 @@ class Eval(commands.Cog):
         aliases = ["pyeval"],
     )
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def eval(self, ctx, *, code: str):
+    async def eval(self, ctx, *, code: codeblocks.codeblock_converter):
+
         start = time.perf_counter()
-        if code.startswith("```py"):
-            code = code.strip("```py")
-            code = code.strip("```")
-        elif code.startswith("```"):
-            code = code.strip("```")
+        code  = code.content
 
         session = Piston()
-        output = await session.MakeRequest("python", code)
+        output  = await session.MakeRequest("python", code)
         embed, message, status = await session.parse_request("python", output)
 
-        if status == 0:
+        if status   == 0:
             await ctx.message.add_reaction("✅")
         elif status == 1:
             await ctx.message.add_reaction("❌")
@@ -141,7 +137,7 @@ class Eval(commands.Cog):
         aliases=["other"],
     )
     @commands.cooldown(1, 10, commands.BucketType.user)
-    async def compile(self, ctx, language: str, *, code: str):
+    async def compile(self, ctx, language: str, *, code: codeblocks.codeblock_converter):
 
         if language.lower() in {"python", "python3"}:
             return await ctx.send("**For python code-evaluation please use the eval command instead:**\n`%help eval`\n`%eval <code>`")
@@ -156,16 +152,11 @@ class Eval(commands.Cog):
             )
 
         else:
+            code  = code.content
             start = time.perf_counter()
 
-            if code.startswith("```"):
-                lines = code.split("\n")
-                if lines[0].startswith("```"):
-                    code = code.strip(lines[0])
-                    code = code.strip("```")
-
             session = Piston()
-            output = await session.MakeRequest(language, code)
+            output  = await session.MakeRequest(language, code)
             embed, message, status = await session.parse_request(language, output)
 
             if status == 0:
@@ -182,14 +173,9 @@ class Eval(commands.Cog):
 
     @commands.command(name="mdtohtml", description="Converts markdown to html", aliases=["markdowntohtml", "htmlify"])
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def mdtohtml(self, ctx, *, code: str):
+    async def mdtohtml(self, ctx, *, code: codeblocks.codeblock_converter):
 
-        if code.startswith("```md") or code.startswith("```markdown"):
-            lines = code.split("\n")
-            code = code.strip(lines[0])
-            code = code.strip("```")
-        elif code.startswith("```"):
-            code = code.strip("```")
+        code = code.content
 
         html = markdown.markdown(code)
         if len(html) > 1980: 
@@ -202,13 +188,9 @@ class Eval(commands.Cog):
 
     @commands.command(name="htmltomd", description="Converts html to markdown", aliases=["htmltomarkdown", "mdify", "markdownify"])
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def htmltomd(self, ctx, *, code: str):
+    async def htmltomd(self, ctx, *, code: codeblocks.codeblock_converter):
 
-        if code.startswith("```html"):
-            code = code.strip("```html")
-            code = code.strip("```")
-        elif code.startswith("```"):
-            code = code.strip("```")
+        code = code.content
 
         md = markdownify.markdownify(code)
         if len(md) > 1980: 

@@ -6,6 +6,7 @@ import re
 
 import pyshorteners
 import json
+from jishaku import codeblocks
 
 
 time_regex = re.compile(r"(\d{1,5}(?:[.,]?\d{1,5})?)([smhd])")
@@ -318,13 +319,9 @@ PyBot • bot v1.2
 
     @commands.command(name="pprint", description="pretty-formats JSON", aliases=["prettyprint"])
     @commands.cooldown(1, 2, commands.BucketType.user)
-    async def pprint(self, ctx, *, code: str):
+    async def pprint(self, ctx, *, code: codeblocks.codeblock_converter):
 
-        if code.startswith("```"):
-            lines = code.split("\n")
-            if lines[0].startswith("```"):
-                code = code.strip(lines[0])
-                code = code.strip("```")
+        code = code.content
         
         j = json.loads(code)
         j = json.dumps(j, indent=4, sort_keys=True)

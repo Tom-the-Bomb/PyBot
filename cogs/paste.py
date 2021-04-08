@@ -6,6 +6,8 @@ from datetime import datetime as dt
 import json
 from io import StringIO
 
+from jishaku import codeblocks
+
 class Paste(commands.Cog):
 
     def __init__(self, client):
@@ -79,12 +81,9 @@ class Paste(commands.Cog):
         description="Pastes provided code in mystbin and returns the link"
     )
     @commands.cooldown(1, 15, commands.BucketType.user)
-    async def mystbin(self, ctx, *, code: str):
+    async def mystbin(self, ctx, *, code: codeblocks.codeblock_converter):
         
-        if code.startswith("```"):
-            lines = code.split("\n")
-            code = code.strip(lines[0])
-            code = code.strip("```")
+        code = code.content
             
         res = await self.paste_mystbin(code)
         url = f"https://mystb.in/{res['pastes'][0]['id']}"
@@ -102,13 +101,9 @@ class Paste(commands.Cog):
         aliases=["gistpaste", "gitpaste", "creategist"]
     )
     @commands.cooldown(1, 60, commands.BucketType.user)
-    async def gist(self, ctx, *, code: str):
-        lang = ""
-        if code.startswith("```"):
-            lines = code.split("\n")
-            lang = lines[0][3:] 
-            code = code.strip(lines[0])
-            code = code.strip("```")
+    async def gist(self, ctx, *, code: codeblocks.codeblock_converter):
+        lang = code.language
+        code = code.content
 
         lang = await self.format_extension(lang)
 
@@ -137,12 +132,9 @@ class Paste(commands.Cog):
 
     @commands.command(name="save", description="saves your code to a file", aliases=["file"])
     @commands.cooldown(1, 8, commands.BucketType.user)
-    async def save(self, ctx, ext: str, *, code: str):
+    async def save(self, ctx, ext: str, *, code: codeblocks.codeblock_converter):
 
-        if code.startswith("```"):
-            lines = code.split("\n")
-            code = code.strip(lines[0])
-            code = code.strip("```")
+        code = code.content
 
         with StringIO() as stream:
             stream.write(code)
