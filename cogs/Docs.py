@@ -8,6 +8,30 @@ import re
 import io
 import os
 import zlib
+from typing import Optional
+
+class LibConverter(commands.Converter):
+    async def convert(self, ctx, lib: str):
+        lib = lib.lower()
+        page_types = {
+            "python"  : 'https://docs.python.org/3',
+            "dpy"     : 'https://discordpy.readthedocs.io/en/latest',
+            "pillow"  : 'https://pillow.readthedocs.io/en/stable/',
+            "aiohttp" : 'https://docs.aiohttp.org/en/stable/', 
+            "flask"   : 'https://flask-doc.readthedocs.io/en/latest/', 
+            "requests": 'https://docs.python-requests.org/en/master/', 
+            "wavelink": 'https://wavelink.readthedocs.io/en/latest/', 
+            "selenium": 'https://selenium-python.readthedocs.io/', 
+            "twitchio": 'https://twitchio.readthedocs.io/en/latest/',
+            "praw"    : 'https://praw.readthedocs.io/en/latest/', 
+            "yarl"    : 'https://yarl.readthedocs.io/en/latest/', 
+            "pymongo" : 'https://pymongo.readthedocs.io/en/stable/',
+            "motor"   : 'https://motor.readthedocs.io/en/stable/',
+        }
+        if lib not in page_types:
+            raise commands.BadArgument()
+        else:
+            return lib
 
 class SphinxObjectFileReader:
 
@@ -129,16 +153,19 @@ class DocScraper:
     async def do_rtfm(self, ctx, key, obj):
         key = key.lower()
         page_types = {
-            'python' : 'https://docs.python.org/3',
-            'dpy'    : 'https://discordpy.readthedocs.io/en/latest',
-            'pillow' : 'https://pillow.readthedocs.io/en/stable/',
-            "aiohttp": 'https://docs.aiohttp.org/en/stable/', 
-            "flask"  : 'https://flask-doc.readthedocs.io/en/latest/', 
+            "python"  : 'https://docs.python.org/3',
+            "dpy"     : 'https://discordpy.readthedocs.io/en/latest',
+            "pillow"  : 'https://pillow.readthedocs.io/en/stable/',
+            "aiohttp" : 'https://docs.aiohttp.org/en/stable/', 
+            "flask"   : 'https://flask-doc.readthedocs.io/en/latest/', 
             "requests": 'https://docs.python-requests.org/en/master/', 
             "wavelink": 'https://wavelink.readthedocs.io/en/latest/', 
             "selenium": 'https://selenium-python.readthedocs.io/', 
             "twitchio": 'https://twitchio.readthedocs.io/en/latest/',
-            "praw"    : "https://praw.readthedocs.io/en/latest/", 
+            "praw"    : 'https://praw.readthedocs.io/en/latest/', 
+            "yarl"    : 'https://yarl.readthedocs.io/en/latest/', 
+            "pymongo" : 'https://pymongo.readthedocs.io/en/stable/',
+            "motor"   : 'https://motor.readthedocs.io/en/stable/',
         }
 
         if key not in page_types:
@@ -181,27 +208,24 @@ class Documentation(commands.Cog):
     def __init__(self, client):
         self.PyBot = client
 
-    @commands.group(
-        name="docs", 
-        description="Quick search in the python-3 docs for the thing you're looking for", 
-        invoke_without_command=True
+    @commands.command(
+        name = "docs", 
+        description = r'''
+        Quick search in the python-3 or a library docs for the thing you're looking for.
+        Optional argument: [library] to search in a lib-docs instead of python
+        - Python docs : %docs str.split    | %docs print
+        - Library docs: %docs requests get | %docs dpy ctx.send
+        ''', 
+        invoke_without_command = True, 
+        aliases = ["documentation", "rtfm", "rtfd"]
     )
     @commands.cooldown(1, 3, commands.BucketType.user)
-    async def docs(self, ctx, *, query: str):
+    async def docs(self, ctx, library: Optional[LibConverter] = "python", *, query: str = None):
+        if not query:
+            return await ctx.send("Please provide a query")
         
         docs = DocScraper()
-        return await docs.do_rtfm(ctx, "python", query)
+        return await docs.do_rtfm(ctx, library, query)
 
-    @docs.command(
-        name="lib", 
-        description="Quick search for an item in a provided lib docs\nEx: `%docs lib pillow draw`\nwill search for 'draw' in the pillow docs",
-        aliases=["module"]
-    )
-    @commands.cooldown(1, 3, commands.BucketType.user)
-    async def lib(self, ctx, lib: str, *, query: str):
-
-        docs = DocScraper()
-        return await docs.do_rtfm(ctx, lib, query)
-            
 def setup(client):
     client.add_cog(Documentation(client))
