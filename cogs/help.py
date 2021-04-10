@@ -37,7 +37,9 @@ class HelpPaginator(menus.ListPageSource):
         super().__init__(entries, per_page=per_page)
 
     async def format_page(self, menu: menus.Menu, page):
-        
+        if page.startswith("**Documentation"):
+            page += "\n- docs [library]"
+        page += "\n```"
         embed = discord.Embed(
             title = "Commands Help!",
             description = "Type `%help [command]` to get more info on a certain command\n━━━━━━━━━━━━━━━━━━━━━━━━━\n\n" + page,
@@ -81,7 +83,7 @@ class Utility(commands.Cog):
         if not command:
             sep = '\n- '
             description = [
-                f"**{cog.qualified_name}**" + f"```diff\n- {sep.join([c.qualified_name for c in cog.walk_commands()])}\n```" for cog in [
+                f"**{cog.qualified_name}**" + f"```diff\n- {sep.join([c.qualified_name for c in cog.walk_commands()])}" for cog in [
                     self.PyBot.get_cog(c) for c in self.PyBot.cogs if c not in self.hidden_cogs
                 ]
             ]
