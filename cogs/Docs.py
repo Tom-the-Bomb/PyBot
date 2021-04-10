@@ -213,8 +213,8 @@ class Documentation(commands.Cog):
         description = r'''
         Quick search in the python-3 or a library docs for the thing you're looking for.
         Optional argument: [library] to search in a lib-docs instead of python
-        - Python docs : %docs str.split    | %docs print
-        - Library docs: %docs requests get | %docs dpy ctx.send
+        • Python docs : `%docs str.split`    | `%docs print`
+        • Library docs: `%docs requests get` | `%docs dpy ctx.send`
         ''', 
         invoke_without_command = True, 
         aliases = ["documentation", "rtfm", "rtfd"]
