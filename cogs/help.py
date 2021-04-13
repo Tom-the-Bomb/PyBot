@@ -4,6 +4,9 @@ from discord.ext import commands, menus, tasks
 from datetime import datetime as dt
 import re
 
+from io import BytesIO
+from gtts import gTTS
+
 import pyshorteners
 import json
 from jishaku import codeblocks
@@ -328,6 +331,19 @@ PyBot • bot v1.2
         j = json.loads(code)
         j = json.dumps(j, indent=4, sort_keys=True)
         return await ctx.send(f"```json\n{j or '-'}\n```")
+
+    @commands.command(name="tts", aliases=["texttospeech"], description="returns a [tts] version of your message")
+    async def tts(self, ctx, *, text: str):
+
+        def make_tts(text: str) -> BytesIO:
+            t = gTTS(text)
+            buffer = BytesIO()
+            t.write_to_fp(buffer)
+            buffer.seek(0)
+            return buffer
+
+        buffer = await self.PyBot.loop.run_in_executor(None, make_tts, text)
+        await ctx.send(file=discord.File(buffer, "tts.mp3"))
 
 def setup(client):
     client.add_cog(Utility(client))
