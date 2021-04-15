@@ -10,6 +10,7 @@ from gtts import gTTS
 import pyshorteners
 import json
 from jishaku import codeblocks
+from aiohttp import ClientSession
 
 
 time_regex = re.compile(r"(\d{1,5}(?:[.,]?\d{1,5})?)([smhd])")
@@ -333,6 +334,7 @@ PyBot • bot v1.2
         return await ctx.send(f"```json\n{j or '-'}\n```")
 
     @commands.command(name="tts", aliases=["texttospeech"], description="returns a [tts] version of your message")
+    @commands.cooldown(1, 3, commands.BucketType.user)
     async def tts(self, ctx, *, text: str):
 
         def make_tts(text: str) -> BytesIO:
@@ -344,6 +346,26 @@ PyBot • bot v1.2
 
         buffer = await self.PyBot.loop.run_in_executor(None, make_tts, text)
         await ctx.send(file=discord.File(buffer, "tts.mp3"))
+
+    @commands.command(name="codeimg", aliases=["code", "codeim", "carbon"], description="Puts your code snippet into a beautiful image")
+    @commands.cooldown(1, 7, commands.BucketType.user)
+    async def codeimg(self, ctx, *, code: codeblocks.codeblock_converter):
+        async with ctx.typing():
+            payload = {"code": code.content}
+            async with ClientSession() as session:
+                async with session.post('https://carbonara.vercel.app/api/cook', json=payload) as r:
+                    if r.status in range(200, 299):
+                        data = BytesIO(await r.read())
+                        data.seek(0)
+                        return await ctx.reply(
+                            file = discord.File(
+                                fp = data,
+                                filename = "code.png"
+                            ), 
+                            allowed_mentions = discord.AllowedMentions.none()
+                        )
+                    else:
+                        return await ctx.send("oops something went wrong")
 
 def setup(client):
     client.add_cog(Utility(client))
