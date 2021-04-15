@@ -146,7 +146,7 @@ PyBot • bot v1.2
         embed.set_thumbnail(url=self.PyBot.user.avatar_url)
         embed.add_field(name='👤 - Members -', value=await self.PyBot.NumMembers(), inline=False)
         embed.add_field(name='🏠 - Server count - ', value=len(self.PyBot.guilds), inline=False)
-        embed.add_field(name='📨 - Command Count - ', value=len([c for c in self.PyBot.walk_commands() if c.cog.qualified_name not in self.hidden_cogs]), inline=False)
+        embed.add_field(name='📨 - Command Count - ', value=len([c for c in self.PyBot.walk_commands() if c.cog and c.cog.qualified_name not in self.hidden_cogs]), inline=False)
         return await ctx.send(embed=embed)
 
     
