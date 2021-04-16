@@ -6,6 +6,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 from io import BytesIO
 import math
+import numpy as np
 
 matplotlib.use("agg")
 
@@ -54,6 +55,32 @@ def line(*args):
     buffer = BytesIO()
     args1 = [int(i) for i in args]
     plt.plot(args, args1, 'o-g')
+    plt.savefig(buffer)
+    plt.close()
+    buffer.seek(0)
+    image = discord.File(buffer, "graph.png")
+    return image
+
+def quadratic(a: float, b: float, c: float):
+    plt.style.use(["fast", "fivethirtyeight", "ggplot"])
+    plt.style.use("bmh")
+    buffer = BytesIO()
+    x = list(range(-10, 11))
+    y = [ (a * (i**2) + (b * i) + c) for i in x]
+    plt.plot(x, y)
+    plt.savefig(buffer)
+    plt.close()
+    buffer.seek(0)
+    image = discord.File(buffer, "graph.png")
+    return image
+
+def exponent(*args):
+    plt.style.use(["fast", "fivethirtyeight", "ggplot"])
+    plt.style.use("bmh")
+    buffer = BytesIO()
+    x = np.array([int(i) for i in args])
+    y = np.exp(x)
+    plt.plot(x, y)
     plt.savefig(buffer)
     plt.close()
     buffer.seek(0)
@@ -110,6 +137,20 @@ class Graphing(commands.Cog):
         if not data_check(args):
             return await ctx.send("data points must be numerical values!")
         image = await self.loop.run_in_executor(None, line, *args)
+        return await ctx.send(file=image)
+
+    @commands.command(name="quadratic", description="Plots a quadratic-line-graph based on the data points that you input", aliases=["quad"])
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def quadratic(self, ctx, a: float, b: float, c: float):
+        image = await self.loop.run_in_executor(None, quadratic, a, b, c)
+        return await ctx.send(file=image)
+
+    @commands.command(name="exponential", description="Plots an exponential-line-graph based on the data points that you input", aliases=["exp"])
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def exponential(self, ctx, *args):
+        if not data_check(args):
+            return await ctx.send("data points must be numerical values!")
+        image = await self.loop.run_in_executor(None, exponent, *args)
         return await ctx.send(file=image)
 
     @commands.command(name="contour", description="Plots a line-graph based on the data points that you input", aliases=["contourplot"])
