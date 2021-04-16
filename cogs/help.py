@@ -245,6 +245,7 @@ PyBot • bot v1.2
             'bug_hunter_level_2'  : "<:bughunter2:826092998860472370>",
             'verified_bot'        : "<:verified:826092596798423070>", 
             'system'              : "<:system:826093796559159336>",
+            'hypesquad'           : "<:hypesquad:832645419083235348>"
         }
         status = {
             discord.Status.online:'<:status_online:596576749790429200>', 
