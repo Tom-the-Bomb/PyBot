@@ -10,6 +10,7 @@ class Errorhandler(commands.Cog):
     async def on_command_error(self, ctx, error):
 
         error = getattr(error, "original", error)
+        ctx.command.reset_cooldown(ctx)
 
         if isinstance(error, commands.MissingPermissions):
             await ctx.send(f'You are missing the `{", ".join(error.missing_perms)}` permissions to do that')
