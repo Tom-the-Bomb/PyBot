@@ -3,6 +3,8 @@ from discord.ext import commands
 import asyncio
 
 import matplotlib
+matplotlib.use("agg")
+
 from matplotlib import pyplot as plt
 import numpy as np
 
@@ -12,11 +14,6 @@ from Equation import Expression
 
 import math
 import re
-
-matplotlib.use("agg")
-
-class InvalidEquationError(Exception):
-    pass
 
 def data_check(data):
     data = [a.isdigit() for a in data]
@@ -76,8 +73,8 @@ def quadratic(a: float, b: float, c: float):
     plt.style.use(["fast", "fivethirtyeight", "ggplot"])
     plt.style.use("bmh")
 
-    plt.xlim((-50, 50))
-    plt.ylim((-50, 50))
+    plt.xlim((-40, 40))
+    plt.ylim((-40, 40))
     buffer = BytesIO()
     
     x_ = np.linspace(-100, 100, 50000)
@@ -94,17 +91,15 @@ def equation_(equation: str):
     plt.style.use(["fast", "fivethirtyeight", "ggplot"])
     plt.style.use("bmh")
 
-    plt.xlim((-50, 50))
-    plt.ylim((-50, 50))   
+    plt.xlim((-40, 40))
+    plt.ylim((-40, 40))   
     buffer = BytesIO()
     
     x_ = np.linspace(-100, 100, 50000)
-    try:
-        fn = Expression(equation, ["x"])
-        y = [fn(x) for x in x_]
-    except TypeError:
-        raise InvalidEquationError()
-        
+    
+    fn = Expression(equation, ["x"])
+    y = [fn(x) for x in x_]
+    
     plt.plot(x_, y)
     plt.savefig(buffer)
     plt.close()
@@ -206,8 +201,11 @@ class Graphing(commands.Cog):
     )
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def equation(self, ctx, equation: str):
-        image = await self.loop.run_in_executor(None, equation_, equation)
-        return await ctx.send(file=image)
+        try:
+            image = await self.loop.run_in_executor(None, equation_, equation)
+            return await ctx.send(file=image)
+        except TypeError:
+            return await ctx.send("Invalid equation\nBe sure to use `*` for multiplication\nand make sure the only variable present is `x`")
 
     @commands.command(name="exponential", description="Plots an exponential-line-graph based on the data points that you input", aliases=["exp"])
     @commands.cooldown(1, 5, commands.BucketType.user)
