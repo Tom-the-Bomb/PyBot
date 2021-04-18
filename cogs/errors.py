@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 
+from cogs.graphs import InvalidEquationError
+
 class Errorhandler(commands.Cog):
 
     def __init__(self, client):
@@ -64,6 +66,9 @@ class Errorhandler(commands.Cog):
 
         elif isinstance(error, commands.NSFWChannelRequired):
             await ctx.send("This command is nsfw only since its a google-image command and google is uh")
+
+        elif isinstance(error, InvalidEquationError):
+            await ctx.send("Invalid equation\nBe sure to use `*` for multiplication\nand make sure the only variable present is `x`")
             
         else:
             raise error

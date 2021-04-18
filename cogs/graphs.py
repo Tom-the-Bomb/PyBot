@@ -1,14 +1,22 @@
 import discord
 from discord.ext import commands
 import asyncio
+
 import matplotlib
 from matplotlib import pyplot as plt
 import numpy as np
+
 from io import BytesIO
+from typing import Optional
+from Equation import Expression
+
 import math
-import numpy as np
+import re
 
 matplotlib.use("agg")
+
+class InvalidEquationError(Exception):
+    pass
 
 def data_check(data):
     data = [a.isdigit() for a in data]
@@ -53,8 +61,11 @@ def line(*args):
     plt.style.use(["fast", "fivethirtyeight", "ggplot"])
     plt.style.use("bmh")
     buffer = BytesIO()
-    args1 = [int(i) for i in args]
-    plt.plot(args, args1, 'o-g')
+
+    x_ = args
+    y = [int(i) for i in args]
+
+    plt.plot(x_, y, 'o-g')
     plt.savefig(buffer)
     plt.close()
     buffer.seek(0)
@@ -64,10 +75,37 @@ def line(*args):
 def quadratic(a: float, b: float, c: float):
     plt.style.use(["fast", "fivethirtyeight", "ggplot"])
     plt.style.use("bmh")
+
+    plt.xlim((-50, 50))
+    plt.ylim((-50, 50))
     buffer = BytesIO()
-    x = list(range(-10, 11))
-    y = [ (a * (i**2) + (b * i) + c) for i in x]
-    plt.plot(x, y)
+    
+    x_ = np.linspace(-100, 100, 50000)
+    y  = [ (a * (i**2) + (b * i) + c) for i in x_]
+        
+    plt.plot(x_, y)
+    plt.savefig(buffer)
+    plt.close()
+    buffer.seek(0)
+    image = discord.File(buffer, "graph.png")
+    return image
+
+def equation_(equation: str):
+    plt.style.use(["fast", "fivethirtyeight", "ggplot"])
+    plt.style.use("bmh")
+
+    plt.xlim((-50, 50))
+    plt.ylim((-50, 50))   
+    buffer = BytesIO()
+    
+    x_ = np.linspace(-100, 100, 50000)
+    try:
+        fn = Expression(equation, ["x"])
+        y = [fn(x) for x in x_]
+    except TypeError:
+        raise InvalidEquationError()
+        
+    plt.plot(x_, y)
     plt.savefig(buffer)
     plt.close()
     buffer.seek(0)
@@ -131,7 +169,15 @@ class Graphing(commands.Cog):
         image = await self.loop.run_in_executor(None, scatter, *args)
         return await ctx.send(file=image)
 
-    @commands.command(name="linegraph", description="Plots a line-graph based on the data points that you input", aliases=["line"])
+    @commands.command(
+        name="linegraph", 
+        description=(
+            "Plots a line-graph based on the data points that you input\n"
+            "Accepts only numerical data-points\n"
+            "EX: `%line 1 2 4 5 7 ...`\n"
+            r"For other equation graphing use %equation"
+        ), aliases=["line"]
+    )
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def linegraph(self, ctx, *args):
         if not data_check(args):
@@ -139,10 +185,28 @@ class Graphing(commands.Cog):
         image = await self.loop.run_in_executor(None, line, *args)
         return await ctx.send(file=image)
 
-    @commands.command(name="quadratic", description="Plots a quadratic-line-graph based on the data points that you input", aliases=["quad"])
+    @commands.command(
+        name="quadratic", 
+        description=(
+            "Plots a quadratic-line-graph based on the data points that you input\n"
+            "Accepts only numerical `a, b, c` values\n"
+            "EX: `%quad -1 2 1`\n"
+            r"For other equation graphing use %equation"
+        ), aliases=["quad"]
+    )
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def quadratic(self, ctx, a: float, b: float, c: float):
         image = await self.loop.run_in_executor(None, quadratic, a, b, c)
+        return await ctx.send(file=image)
+
+    @commands.command(
+        name="equation", 
+        description="Graphs your equation\nNote: use an asterix for mutiplication\nEx: `2*x` instead of `2x` etc.\nand do not include `y=`", 
+        aliases=["eq"]
+    )
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def equation(self, ctx, equation: str):
+        image = await self.loop.run_in_executor(None, equation_, equation)
         return await ctx.send(file=image)
 
     @commands.command(name="exponential", description="Plots an exponential-line-graph based on the data points that you input", aliases=["exp"])
