@@ -94,6 +94,15 @@ def equation_(equation: str):
     plt.xlim((-40, 40))
     plt.ylim((-40, 40))   
     buffer = BytesIO()
+
+    def _mul(val):
+        val = list(val.group())
+        val.insert(-1, "*")
+        return "".join(val)
+
+    equation = str(re.sub(r"([0-9\.] ?x)",  _mul, equation))
+    equation = str(re.sub(r"([0-9\.] ?\()", _mul, equation))
+    equation = equation.replace(")(", ")*(")
     
     x_ = np.linspace(-100, 100, 50000)
     

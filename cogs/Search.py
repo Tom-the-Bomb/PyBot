@@ -369,23 +369,25 @@ class Search(commands.Cog):
                     data = await r.text(encoding="utf-8")
                     
                     def ParsePEP(data):
+                        sep  = ("\n", "\n+ ")
                         soup = BeautifulSoup(data, "html.parser")
 
-                        html = soup.find_all('tr')
-                        html2 = soup.find_all('td')
+                        td   = soup.find_all('tr', class_ = "field")
+                        th   = [item.th.contents[0] for item in td if item.th.contents]
+                        tr   = [item.td.contents[0] for item in td if item.td.contents]
 
-                        elements = [element.contents[0].contents for element in html[:5]]
-                        elements2 = [element.contents[0] for element in html2[:5]]
-                        
-                        desc = "```ini\n"
-                        for a, b, in zip(elements, elements2):
-                            desc += f" • [ {a[0]} ] :\n{b}\n"
-
+                        desc = "```diff\n"
+                        for a, b in zip(th, tr):
+                            if hasattr(b, "contents"):
+                                desc += f"- [ {a} ]\n+ {b.contents[0].replace(*sep)}\n"
+                            else:
+                                desc += f"- [ {a} ]\n+ {b.replace(*sep)}\n"
                         desc += "\n```"
+
                         embed = discord.Embed(
-                            title=soup.title.contents[0],
-                            url = url,
-                            description= desc,
+                            title = soup.title.contents[0],
+                            url   = url,
+                            description = desc,
                         )
                         embed.set_thumbnail(url=self.pep_image)
                         return embed
