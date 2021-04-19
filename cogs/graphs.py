@@ -69,6 +69,24 @@ def line(*args):
     image = discord.File(buffer, "graph.png")
     return image
 
+def linear(m: float, b: float):
+    plt.style.use(["fast", "fivethirtyeight", "ggplot"])
+    plt.style.use("bmh")
+
+    plt.xlim((-40, 40))
+    plt.ylim((-40, 40))
+    buffer = BytesIO()
+    
+    x_ = np.linspace(-100, 100, 50000)
+    y  = [ (m*i + b) for i in x_]
+        
+    plt.plot(x_, y)
+    plt.savefig(buffer)
+    plt.close()
+    buffer.seek(0)
+    image = discord.File(buffer, "graph.png")
+    return image
+
 def quadratic(a: float, b: float, c: float):
     plt.style.use(["fast", "fivethirtyeight", "ggplot"])
     plt.style.use("bmh")
@@ -204,8 +222,22 @@ class Graphing(commands.Cog):
         return await ctx.send(file=image)
 
     @commands.command(
+        name="linear", 
+        description=(
+            "Plots a linear-line-graph based on the data points that you input\n"
+            "Accepts only numerical `m, b` values\n"
+            "EX: `%quad 2 1`\n"
+            r"For other equation graphing use %equation"
+        )
+    )
+    @commands.cooldown(1, 5, commands.BucketType.user)
+    async def linear(self, ctx, m: float, b: float):
+        image = await self.loop.run_in_executor(None, linear, m, b)
+        return await ctx.send(file=image)
+
+    @commands.command(
         name="equation", 
-        description="Graphs your equation\nNote: use an asterix for mutiplication\nEx: `2*x` instead of `2x` etc.\nand do not include `y=`", 
+        description="Graphs your equation\nEx: `%eq 2x+1 ; %eq 2x^2 + 4x -3`", 
         aliases=["eq"]
     )
     @commands.cooldown(1, 5, commands.BucketType.user)
@@ -214,7 +246,7 @@ class Graphing(commands.Cog):
             image = await self.loop.run_in_executor(None, equation_, equation)
             return await ctx.send(file=image)
         except TypeError:
-            return await ctx.send("Invalid equation\nBe sure to use `*` for multiplication\nand make sure the only variable present is `x`")
+            return await ctx.send("Invalid equation\nMake sure the only variable present is `x`!")
 
     @commands.command(name="exponential", description="Plots an exponential-line-graph based on the data points that you input", aliases=["exp"])
     @commands.cooldown(1, 5, commands.BucketType.user)
