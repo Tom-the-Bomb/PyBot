@@ -5,6 +5,7 @@ import textwrap
 
 from aiohttp import ClientSession
 from bs4 import BeautifulSoup
+from io import BytesIO
 
 import unicodedata
 import re
@@ -506,6 +507,23 @@ class Search(commands.Cog):
                         return await ctx.send(f'```\n{data["ParsedResults"][0]["ParsedText"] or "[Nothing was found]"}\n```')
                     else:
                         return await ctx.send(r.status)
+
+    @commands.command(name="http")
+    @commands.cooldown(1, 2, commands.BucketType.user)
+    async def _http(self, ctx, status_code: int):
+        async with ClientSession() as session:
+            async with session.get(f"https://http.cat/{status_code}") as r:
+                if r.status in range(200, 299):
+                    return await ctx.send(
+                        file = discord.File(
+                            fp = BytesIO(await r.read()),
+                            filename = "http.png"
+                        )
+                    )
+                elif r.status == 404:
+                    return await ctx.send("Invalid status code")
+                else:
+                    return await ctx.send("Oops an error occured")
             
 def setup(client):
     client.add_cog(Search(client))
