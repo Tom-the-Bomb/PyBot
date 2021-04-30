@@ -417,20 +417,15 @@ class Search(commands.Cog):
                 u_code = f"\\U{digit:>08}"
 
             url = f"https://www.compart.com/en/unicode/U+{digit:>04}"
-            name = f"[{unicodedata.name(char, '')}]({url})"
+            name = f"**[{unicodedata.name(char, '')}]({url})**"
 
-            char = char.replace("_", r"\_")
-            char = char.replace("*", r"\*")
-            char = char.replace("|", r"\|")
-            char = char.replace("~", r"\~")
-
-            info = f"`{u_code.ljust(10)}`| {name}\t•\t**{char}**"
+            info = f"`{u_code.ljust(10).replace(' ', '')}` | {name}\t•\t**{discord.utils.escape_markdown(char)}**"
             return info, u_code
 
         char_list, raw_list = zip(*(get_info(c) for c in characters))
-        embed = discord.Embed(title="━━  Unicode Character Info Engine  ━━")
+        embed = discord.Embed(title="Unicode Character Info Engine")
         embed.description = "\n".join(char_list) + "\n\u200b"
-        embed.add_field(name='━━━━━━━  Full Raw Text  ━━━━━━━', value=f"`{''.join(raw_list)}`", inline=False)
+        embed.add_field(name='Full Raw Text', value=f"`{''.join(raw_list)}`", inline=False)
         
         return await ctx.send(embed=embed)
 
