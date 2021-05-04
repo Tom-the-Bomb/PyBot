@@ -1,7 +1,10 @@
 import discord
+import datetime
+
 from discord import PublicUserFlags as Flags
 from discord.ext import commands, menus, tasks
 from datetime import datetime as dt
+
 import re
 
 from io import BytesIO
@@ -9,8 +12,10 @@ from gtts import gTTS
 
 import pyshorteners
 import json
-from jishaku import codeblocks
-from aiohttp import ClientSession
+from jishaku  import codeblocks
+from aiohttp  import ClientSession
+from humanize import precisedelta
+from dateparser.search import search_dates
 
 
 time_regex = re.compile(r"(\d{1,5}(?:[.,]?\d{1,5})?)([smhd])")
@@ -19,19 +24,32 @@ time_dict = {"h":3600, "s":1, "m":60, "d":86400}
 class TimeConverter(commands.Converter):
     
     async def convert(self, ctx, argument):
-        
-        matches = time_regex.findall(argument.lower())
+        status   = True
+        argument = argument.lower()
+        matches  = time_regex.findall(argument)
+
         if not matches:
-            raise commands.BadArgument('no matches were found')
+            status = False
+
         time = 0
         for v, k in matches:
             try:
-                time += time_dict[k]*float(v)
+                argument = argument.replace(v+k, "")
+                time += time_dict[k] * float(v)
             except KeyError:
-                raise commands.BadArgument('The supported suffixes for tempmute are `s`, `m`, `h`, and `d`, please try again')
+                status = False
             except ValueError:
-                raise commands.BadArgument(f"{v} is not a number!")
-        return time
+                status = False
+
+        if not status:
+            time = search_dates(argument, settings={"TIMEZONE": "UTC"})
+            if time:
+                date = time[0][1] - dt.utcnow()
+                return abs(date.total_seconds()), precisedelta(date), argument.replace(time[0][0], "")
+            else:
+                raise commands.BadArgument()
+        else:
+            return abs(time), precisedelta(datetime.timedelta(seconds=abs(time))), argument
 
 class HelpPaginator(menus.ListPageSource):
 
@@ -296,18 +314,19 @@ PyBot • bot v1.2
 
     @commands.command(name="reminder", aliases=["remind"], description="sets a reminder for you")
     @commands.cooldown(1, 5, commands.BucketType.user)
-    async def reminder(self, ctx, time: TimeConverter, *, content: str):
+    async def reminder(self, ctx, *, reminder: TimeConverter):
 
-        raw_time = ctx.message.content.split(" ")[1].lower()
-            
-        await ctx.reply(f'Reminder has been set for `{raw_time}`')
+        seconds, natural, content = reminder
+        content = content.strip().replace("  ", " ")
+        content = content[2:].strip() if content.startswith("me") else content
+        await ctx.send(f'Sure Ill remind you about | `{content}`\n**in {natural}**')
 
         async def loopy():
             if not l._current_loop:
                 return
-            await ctx.send(f'**Reminder:**  {ctx.author.mention}', embed = discord.Embed(description=content + f"\n\n[Jump to message]({ctx.message.jump_url})"))
+            await ctx.reply(f'**Reminder:**  `{ctx.author.name}`', embed = discord.Embed(description=content + f"\n\n[Jump to message]({ctx.message.jump_url})"))
 
-        l = tasks.Loop(loopy, seconds=time, count=2, minutes=0, hours=0, reconnect=True, loop=None)
+        l = tasks.Loop(loopy, seconds=seconds, count=2, minutes=0, hours=0, reconnect=True, loop=None)
         l.start()
 
     @commands.command(name="shortenurl", description="Returns a tinyurl link that leads to your link provided", aliases=["tinyurl"])
