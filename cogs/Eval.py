@@ -59,7 +59,7 @@ class Piston:
 ```{raw_lang}
 "{language} - {version}"
 
-{output or "[No output]"}
+{stdout or stderr or "[No output]"}
 ```
         '''
         return embed, MessageString, status
