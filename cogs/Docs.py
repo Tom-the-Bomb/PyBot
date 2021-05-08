@@ -104,7 +104,7 @@ class Documentation(commands.Cog):
             ),
             "c": Docs(
                 url="c", 
-                aliases=("clang")
+                aliases=("clang",)
             ),
             "cpp": Docs(
                 url="cpp", 
