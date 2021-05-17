@@ -102,6 +102,9 @@ class Documentation(commands.Cog):
                 url="https://opencv-python.readthedocs.io/en/latest/", 
                 aliases=("cv", "cv2")
             ),
+            "quart": Docs(
+                url="https://pgjones.gitlab.io/quart/"
+            ),
             "c": Docs(
                 url="c", 
                 aliases=("clang",)
