@@ -525,7 +525,7 @@ class Search(commands.Cog):
     async def weather(self, ctx, *, location: str):
         async with ClientSession() as session:
             async with session.get("https://api.cool-img-api.ml/weather-card", params={"location": location}) as r:
-                if r.status in range(200, 299):
+                if r.content_type == "image/png":
                     return await ctx.reply(
                         file = discord.File(
                             fp = BytesIO(await r.read()),
