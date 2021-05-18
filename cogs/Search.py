@@ -519,6 +519,19 @@ class Search(commands.Cog):
                     return await ctx.send("Invalid status code")
                 else:
                     return await ctx.send("Oops an error occured")
+
+    @commands.command(name="weather")
+    @commands.cooldown(1, 2, commands.BucketType.user)
+    async def weather(self, ctx, *, location: str):
+        async with ClientSession() as session:
+            async with session.get("https://api.cool-img-api.ml/weather-card", params={"location": location}) as r:
+                return await ctx.reply(
+                    file = discord.File(
+                        fp = BytesIO(await r.read()),
+                        filename = "weather.png"
+                    ),
+                    allowed_mentions = discord.AllowedMentions.none()
+                )
             
 def setup(client):
     client.add_cog(Search(client))
