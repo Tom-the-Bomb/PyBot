@@ -525,13 +525,16 @@ class Search(commands.Cog):
     async def weather(self, ctx, *, location: str):
         async with ClientSession() as session:
             async with session.get("https://api.cool-img-api.ml/weather-card", params={"location": location}) as r:
-                return await ctx.reply(
-                    file = discord.File(
-                        fp = BytesIO(await r.read()),
-                        filename = "weather.png"
-                    ),
-                    allowed_mentions = discord.AllowedMentions.none()
-                )
+                if r.status in range(200, 299):
+                    return await ctx.reply(
+                        file = discord.File(
+                            fp = BytesIO(await r.read()),
+                            filename = "weather.png"
+                        ),
+                        allowed_mentions = discord.AllowedMentions.none()
+                    )
+                else:
+                    return await ctx.send("Unknown Location or server-error")
             
 def setup(client):
     client.add_cog(Search(client))
