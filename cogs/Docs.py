@@ -105,6 +105,9 @@ class Documentation(commands.Cog):
             "quart": Docs(
                 url="https://pgjones.gitlab.io/quart/"
             ),
+            "jinja": Docs(
+                url="https://jinja.palletsprojects.com/en/3.0.x/"
+            ),
             "c": Docs(
                 url="c", 
                 aliases=("clang",)
