@@ -416,16 +416,23 @@ class Search(commands.Cog):
             else:
                 u_code = f"\\U{digit:>08}"
 
-            url = f"https://www.compart.com/en/unicode/U+{digit:>04}"
+            url = f"https://www.fileformat.info/info/unicode/char/{digit:>04}/index.htm"
             name = f"**[{unicodedata.name(char, '')}]({url})**"
 
             info = f"`{u_code.ljust(10).replace(' ', '')}` | {name}\t•\t**{discord.utils.escape_markdown(char)}**"
-            return info, u_code
+            return info, u_code, url
 
-        char_list, raw_list = zip(*(get_info(c) for c in characters))
+        async def get_image(url: str):
+            async with ClientSession() as session:
+                async with session.get(url) as r:
+                    data = BeautifulSoup(await r.text())
+                    return data.find_all("meta")[-1].get("content")
+
+        char_list, raw_list, url = zip(*(get_info(c) for c in characters))
         embed = discord.Embed(title="Unicode Character Info Engine")
         embed.description = "\n".join(char_list) + "\n\u200b"
         embed.add_field(name='Full Raw Text', value=f"`{''.join(raw_list)}`", inline=False)
+        embed.set_thumbnail(url=await get_image(url[0]))
         
         return await ctx.send(embed=embed)
 

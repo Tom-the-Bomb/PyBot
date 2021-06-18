@@ -115,6 +115,15 @@ class Documentation(commands.Cog):
             "cpp": Docs(
                 url="cpp", 
                 aliases=("cplusplus", "c++")
+            ), 
+            "sly": Docs(
+                url="https://sly.readthedocs.io/en/latest/"
+            ),
+            "rply": Docs(
+                url="https://rply.readthedocs.io/en/latest/"
+            ), 
+            "lark": Docs(
+                url="https://lark-parser.readthedocs.io/en/latest/"
             )
         }
 
@@ -130,7 +139,7 @@ class Documentation(commands.Cog):
         aliases = ["doc", "documentation", "rtfm", "rtfd"]
     )
     @commands.cooldown(1, 3, commands.BucketType.user)
-    async def _docs(self, ctx, library_or_lang: str, *, query: str):
+    async def _docs(self, ctx, library_or_lang: str, *, query: str = None):
         page_ = library_or_lang.lower()
         page  = self.page_types.get(page_)
 
@@ -146,6 +155,9 @@ class Documentation(commands.Cog):
                 )
             page = matches[0]
         page = page.url
+
+        if not query:
+            await ctx.send(f"**{page}**")
 
         if page == "c":
             matches = await self.scraper.search_c(query)
