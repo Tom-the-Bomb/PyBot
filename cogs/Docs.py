@@ -157,7 +157,7 @@ class Documentation(commands.Cog):
         page = page.url
 
         if not query:
-            await ctx.send(f"**{page}**")
+            return await ctx.send(f"**{page}**")
 
         if page == "c":
             matches = await self.scraper.search_c(query)
