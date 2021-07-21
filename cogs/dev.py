@@ -6,13 +6,14 @@ from discord.ext import commands
 import os
 
 from jishaku import codeblocks
-from fstop.tests.test import Runner
+
+from fstop import Runner
 
 class Developer(commands.Cog):
 
     def __init__(self, client):
         self.PyBot = client
-        self.runner = Runner()
+        self.runner = Runner(reset_after_execute=True)
 
     @commands.command(name="load")
     @commands.is_owner()
@@ -50,13 +51,13 @@ class Developer(commands.Cog):
             await ctx.send(f'An error has occured: {e}')
 
     @commands.command(name="fs")
-    @commands.check(lambda ctx: ctx.author.id in (693987130036453398, 414556245178056706) or ctx.bot.is_owner(ctx.author))
+    @commands.check(lambda ctx: ctx.author.id in (693987130036453398, 414556245178056706, 590323594744168494) or ctx.bot.is_owner(ctx.author))
     async def fs(self, ctx, *, code: codeblocks.codeblock_converter):
         try:
             _ = self.runner.execute(
                 code.content, 
                 streams = [
-                    BytesIO(await ctx.author.avatar_url_as(format="png").read()),
+                    BytesIO(await ctx.author.avatar_url.read()),
                 ]
             )
         except Exception as exc:
@@ -68,8 +69,6 @@ class Developer(commands.Cog):
                 await ctx.send(file=discord.File(self.runner.streams[0], "0.gif"))
             except IndexError:
                 await ctx.send(_)
-        finally:
-            self.runner.reset()
 
 def setup(client):
     client.add_cog(Developer(client))
