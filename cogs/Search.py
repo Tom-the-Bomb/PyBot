@@ -57,7 +57,6 @@ class PaginatorSource(menus.ListPageSource):
         super().__init__(entries, per_page=per_page)
 
     async def format_page(self, menu: menus.Menu, page):
-        
         owner = page["owner"]
         embed = discord.Embed(
             title = page["title"],
@@ -80,7 +79,6 @@ class PaginatorSource(menus.ListPageSource):
         return embed
 
     def is_paginating(self):
-        
         return True
 
 class RepoPaginator(menus.ListPageSource):
@@ -126,7 +124,7 @@ class RepoPaginator(menus.ListPageSource):
         return embed
 
     def is_paginating(self):
-        
+
         return True
 
 class UserPaginator(menus.ListPageSource):
@@ -136,7 +134,7 @@ class UserPaginator(menus.ListPageSource):
         super().__init__(entries, per_page=per_page)
 
     async def format_page(self, menu: menus.Menu, page):
-        
+
         notfound = "https://github.com/404"
         embed = discord.Embed(
             title = page["login"],
@@ -160,7 +158,7 @@ class UserPaginator(menus.ListPageSource):
         return embed
 
     def is_paginating(self):
-        
+
         return True
 
 class ImagePaginator(menus.ListPageSource):
@@ -185,9 +183,9 @@ class GooglePaginator(menus.ListPageSource):
     async def format_page(self, menu: menus.Menu, page):
         logo = "https://th.bing.com/th/id/R0f1b7e086fcf515daad0de9ecf88de41?rik=kOFIxoLiWIdFFQ&pid=ImgRaw"
         embed = discord.Embed(
-            title= page.title, 
-            description= page.description, 
-            url = page.url, 
+            title= page.title,
+            description= page.description,
+            url = page.url,
             color = discord.Color.gold()
         )
         embed.set_thumbnail(url=page.image_url)
@@ -231,7 +229,7 @@ class Search(commands.Cog):
                     issue = urls.get("Issue tracker") if urls else None
 
                     embed = discord.Embed(
-                        title = f"{data['name']} | {data['version'] or '-'}", 
+                        title = f"{data['name']} | {data['version'] or '-'}",
                         description = (
                         f'''
 {data["summary"]}
@@ -260,11 +258,10 @@ class Search(commands.Cog):
     @commands.command(name="stack", aliases=["stacksearch"], description="Does a quick search on stack-overflow based on your query")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def stack(self, ctx, *, query: str):
-
         endpoint = "search"
         params = {
-            "order": "desc", 
-            "intitle": query, 
+            "order": "desc",
+            "intitle": query,
             "sort": "activity",
             "site": "stackoverflow"
         }
@@ -292,13 +289,13 @@ class Search(commands.Cog):
                     return await ctx.send("Oops an error has occured")
 
     @commands.group(
-        name= "gitsearch", 
-        aliases= ["githubsearch", "github"], 
-        invoke_without_command=True, 
+        name= "gitsearch",
+        aliases= ["githubsearch", "github"],
+        invoke_without_command=True,
         description=r'''
         Searches for repositories on github with your query.
         ex: %gitsearch chessbot
-        Has a 'user' subcommand for searching for users instead, 
+        Has a 'user' subcommand for searching for users instead,
         You can invoke that with ex: %gitsearch user rapptz
         '''
     )
@@ -323,7 +320,7 @@ class Search(commands.Cog):
                     pages = RepoPaginator(ctx=ctx, entries=data)
                     paginator = menus.MenuPages(source=pages, timeout=None, delete_message_after=True)
                     return await paginator.start(ctx)
-                        
+
                 elif r.status == 404:
                     return await ctx.send("No results were found")
                 else:
@@ -332,7 +329,6 @@ class Search(commands.Cog):
     @gitsearch.command(name="user", description="Searches on github for users")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def user(self, ctx, *, query: str):
-
         endpoint = f"search/users"
 
         async with ClientSession() as session:
@@ -351,7 +347,7 @@ class Search(commands.Cog):
                     pages = UserPaginator(ctx=ctx, entries=data)
                     paginator = menus.MenuPages(source=pages, timeout=None, delete_message_after=True)
                     return await paginator.start(ctx)
-                        
+
                 elif r.status == 404:
                     return await ctx.send("No results were found")
                 else:
@@ -368,7 +364,7 @@ class Search(commands.Cog):
 
                 if r.status in range(200, 299):
                     data = await r.text(encoding="utf-8")
-                    
+
                     def ParsePEP(data):
                         sep  = ("\n", "\n+ ")
                         soup = BeautifulSoup(data, "html.parser")
@@ -433,7 +429,7 @@ class Search(commands.Cog):
         embed.description = "\n".join(char_list) + "\n\u200b"
         embed.add_field(name='Full Raw Text', value=f"`{''.join(raw_list)}`", inline=False)
         embed.set_thumbnail(url=await get_image(url[0]))
-        
+
         return await ctx.send(embed=embed)
 
     @commands.command(name="revimg", aliases=["reverseimgsearch", "revimgsearch"], description="Reverse image searches with an image url you provide")
@@ -448,7 +444,7 @@ class Search(commands.Cog):
             embed = discord.Embed(
                 title="Reverse image search result",
                 description=f"`{r}`"
-            ), 
+            ),
             allowed_mentions= discord.AllowedMentions.none()
         )
 
@@ -456,11 +452,10 @@ class Search(commands.Cog):
     @commands.cooldown(1, 5, commands.BucketType.user)
     @commands.is_nsfw()
     async def image(self, ctx, *, query: str):
-
         try:
             results = await self._google.search(
-                query = query, 
-                safesearch = False, 
+                query = query,
+                safesearch = False,
                 image_search = True
             )
             pages = ImagePaginator(ctx=ctx, entries=results)
@@ -474,11 +469,10 @@ class Search(commands.Cog):
     @commands.command(name="google", description="Performs a google query search with your inputted query", aliases=["search"])
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def google(self, ctx, *, query: str):
-
         try:
             results = await self._google.search(
-                query = query, 
-                safesearch = True if not ctx.channel.is_nsfw() else False, 
+                query = query,
+                safesearch = True if not ctx.channel.is_nsfw() else False,
                 image_search = False
             )
             pages = GooglePaginator(ctx=ctx, entries=results)
@@ -490,13 +484,12 @@ class Search(commands.Cog):
             return await ctx.send(embed=embed)
 
     @commands.command(
-        name        = "imagetotext", 
-        aliases     = ["ocr"], 
+        name        = "imagetotext",
+        aliases     = ["ocr"],
         description = "Extracts text from a provided image\n(if the text in an image is a different language you can specify the language after the url and it will detect text in that language and not english)"
     )
     @commands.cooldown(1, 12, commands.BucketType.user)
     async def imagetotext(self, ctx, url: str, lang: typing.Optional[LanguageConv] = "eng"):
-
         if not url.startswith("https://") and not url.startswith("http://"):
             return await ctx.send("urls must start with http or https.")
 
@@ -542,6 +535,6 @@ class Search(commands.Cog):
                     )
                 else:
                     return await ctx.send("Unknown Location or server-error")
-            
+
 def setup(client):
     client.add_cog(Search(client))
