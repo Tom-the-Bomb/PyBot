@@ -25,7 +25,7 @@ class PythonBot(commands.AutoShardedBot):
         self.config = load_config()
         self.BotToken = self.config["TOKEN"]
         self._ClientSecret = self.config["SECRET"]
-        self.launch_time = dt.utcnow() 
+        self.launch_time = dt.utcnow()
         self._timeformat = "%m/%d/%Y, %H:%M:%S"
         self.cluster = AsyncIOMotorClient(
             self.config["MONGO"]["CONNECTION_STRING"]
@@ -54,11 +54,11 @@ class PythonBot(commands.AutoShardedBot):
         minutes, seconds = divmod(remainder, 60)
         days, hours = divmod(hours, 24)
         return days, hours, minutes, seconds
-    
+
     async def change_status(self):
         await self.wait_until_ready()
         await self.change_presence(
-            status=discord.Status.idle, 
+            status=discord.Status.idle,
             activity = discord.Game(
                 f"Evaluating code for {await self.NumMembers()} users in {len(self.guilds)} servers"
             )
@@ -70,7 +70,7 @@ class PythonBot(commands.AutoShardedBot):
         print(
             f"{self.user} is connected at {LogTime}"
         )
-        
+
     async def on_ready(self):
 
         LogTime = dt.now().strftime(self._timeformat)
@@ -82,7 +82,7 @@ class PythonBot(commands.AutoShardedBot):
         await self.change_status()
 
     async def on_guild_join(self, guild):
-        
+
         await self.Tags.insert_one({"_guild_id_": guild.id})
         await self.change_status()
         channel = self.get_channel(id=810977913025200148)
@@ -91,7 +91,7 @@ class PythonBot(commands.AutoShardedBot):
         try:
             return await channel.send(
                 embed = discord.Embed(
-                    title="Thanks for adding me to your server!", 
+                    title="Thanks for adding me to your server!",
                     description=r'''
                     ```
 My prefix is % but you can also mention me as prefix!
@@ -99,7 +99,7 @@ Do `%help` for help and %info for info!
 To get started with tags  : %tag create
 To get started with To-do : %todo add
                     ```
-                    ''', 
+                    ''',
                     url="https://dsc.gg/pybot"
                 )
             )
@@ -107,7 +107,7 @@ To get started with To-do : %todo add
             return
 
     async def on_guild_remove(self, guild):
-        
+
         await self.Tags.delete_one({"_guild_id_": guild.id})
         await self.change_status()
         channel = self.get_channel(id=810977913025200148)

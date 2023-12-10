@@ -14,8 +14,8 @@ class TodoPaginator(menus.ListPageSource):
 
     async def format_page(self, menu: menus.Menu, page):
         embed = discord.Embed(
-            title=f"`{self.ctx.author.name}'s` To-do list", 
-            description = "\n".join(page), 
+            title=f"`{self.ctx.author.name}'s` To-do list",
+            description = "\n".join(page),
             timestamp = dt.utcnow()
         )
         embed.set_footer(text=f"Page {menu.current_page+1}/{self.get_max_pages()}")
@@ -33,7 +33,7 @@ class ToDoSystem(commands.Cog):
 
     @commands.group(
         name="todo",
-        invoke_without_command=True, 
+        invoke_without_command=True,
         description="Shows your current todo list"
     )
     @commands.cooldown(1, 5, commands.BucketType.user)
@@ -81,7 +81,7 @@ class ToDoSystem(commands.Cog):
             return await ctx.send("Please keep the to-do content under 220 characters!")
         try:
             await self.Todo.update_one(
-                {"user": ctx.author.id}, 
+                {"user": ctx.author.id},
                 {"$push": {"todo": (ctx.message.jump_url, content) }}
             )
             return await ctx.send(
@@ -117,7 +117,7 @@ class ToDoSystem(commands.Cog):
             if index.lower() == "all":
                 try:
                     await self.Todo.update_one(
-                        {"user": ctx.author.id}, 
+                        {"user": ctx.author.id},
                         {"$set": {"todo": []}}
                     )
                     return await ctx.send(
@@ -141,7 +141,7 @@ class ToDoSystem(commands.Cog):
                     return await ctx.send("Looks like that index doesn't exist on your list!")
                 try:
                     await self.Todo.update_one(
-                        {"user": ctx.author.id}, 
+                        {"user": ctx.author.id},
                         {"$pull": {"todo": item}}
                     )
                     return await ctx.send(
@@ -180,7 +180,7 @@ class ToDoSystem(commands.Cog):
                 items = user["todo"]
                 items[index] = (ctx.message.jump_url, content)
                 await self.Todo.update_one(
-                    {"user": ctx.author.id}, 
+                    {"user": ctx.author.id},
                     {"$set": {"todo": items}}
                 )
                 return await ctx.send(
@@ -195,7 +195,7 @@ class ToDoSystem(commands.Cog):
                 )
 
     @todo.command(
-        name="info", 
+        name="info",
         description="info on todo-item"
     )
     @commands.cooldown(1, 5, commands.BucketType.user)
@@ -220,8 +220,8 @@ class ToDoSystem(commands.Cog):
                 created_at = await conv.convert(ctx, item[0])
                 created_at = created_at.created_at.strftime(self.PyBot._timeformat)
                 embed = discord.Embed(
-                    title=f"Todo item `{index}`", 
-                    description=f"```ini\n[ Index ] : {index}\n[ Created at ] : {created_at}\n[ Content ] : {item[1]}\n```\n\n[Jump to message]({item[0]})", 
+                    title=f"Todo item `{index}`",
+                    description=f"```ini\n[ Index ] : {index}\n[ Created at ] : {created_at}\n[ Content ] : {item[1]}\n```\n\n[Jump to message]({item[0]})",
                     timestamp = dt.utcnow()
                 )
                 embed.set_footer(text=f"{ctx.author.name}'s To-do list", icon_url=ctx.author.avatar_url)
@@ -260,7 +260,7 @@ class ToDoSystem(commands.Cog):
                 array = user["todo"]
                 array.insert(index, (ctx.message.jump_url, content))
                 await self.Todo.update_one(
-                    {"user": ctx.author.id}, 
+                    {"user": ctx.author.id},
                     {"$set": {"todo": array}}
                 )
                 return await ctx.send(
@@ -299,7 +299,7 @@ class ToDoSystem(commands.Cog):
                 array[original], array[to] = array[to], array[original]
 
                 await self.Todo.update_one(
-                    {"user": ctx.author.id}, 
+                    {"user": ctx.author.id},
                     {"$set": {"todo": array}}
                 )
                 return await ctx.send(

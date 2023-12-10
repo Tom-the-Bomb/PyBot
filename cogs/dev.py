@@ -18,7 +18,7 @@ class Developer(commands.Cog):
     @commands.command(name="load")
     @commands.is_owner()
     async def load(self, ctx, extension: str):
-        
+
         try:
             self.PyBot.load_extension("cogs." + extension)
             await ctx.send(f'`➡️ cogs.{extension}` loaded successfully')
@@ -28,7 +28,7 @@ class Developer(commands.Cog):
     @commands.command(name="unload")
     @commands.is_owner()
     async def unload(self, ctx, extension: str):
-        
+
         try:
             self.PyBot.unload_extension("cogs." + extension)
             await ctx.send(f'`➡️ cogs.{extension}` unloaded successfully')
@@ -38,7 +38,7 @@ class Developer(commands.Cog):
     @commands.command(name="reload")
     @commands.is_owner()
     async def reload(self, ctx, extension: str):
-        
+
         try:
             if extension.lower() == 'all':
                 for filename in os.listdir("./cogs"):
@@ -55,7 +55,7 @@ class Developer(commands.Cog):
     async def fs(self, ctx, *, code: codeblocks.codeblock_converter):
         try:
             _ = self.runner.execute(
-                code.content, 
+                code.content,
                 streams = [
                     BytesIO(await ctx.author.avatar_url.read()),
                 ]

@@ -76,10 +76,10 @@ def linear(m: float, b: float):
     plt.xlim((-40, 40))
     plt.ylim((-40, 40))
     buffer = BytesIO()
-    
+
     x_ = np.linspace(-100, 100, 50000)
     y  = [ (m*i + b) for i in x_]
-        
+
     plt.plot(x_, y)
     plt.savefig(buffer)
     plt.close()
@@ -94,10 +94,10 @@ def quadratic(a: float, b: float, c: float):
     plt.xlim((-40, 40))
     plt.ylim((-40, 40))
     buffer = BytesIO()
-    
+
     x_ = np.linspace(-100, 100, 50000)
     y  = [ (a * (i**2) + (b * i) + c) for i in x_]
-        
+
     plt.plot(x_, y)
     plt.savefig(buffer)
     plt.close()
@@ -110,7 +110,7 @@ def equation_(equation: str):
     plt.style.use("bmh")
 
     plt.xlim((-40, 40))
-    plt.ylim((-40, 40))   
+    plt.ylim((-40, 40))
     buffer = BytesIO()
 
     def _mul(val):
@@ -121,12 +121,12 @@ def equation_(equation: str):
     equation = str(re.sub(r"([0-9\.] ?x)",  _mul, equation))
     equation = str(re.sub(r"([0-9\.] ?\()", _mul, equation))
     equation = equation.replace(")(", ")*(")
-    
+
     x_ = np.linspace(-100, 100, 50000)
-    
+
     fn = Expression(equation, ["x"])
     y = [fn(x) for x in x_]
-    
+
     plt.plot(x_, y)
     plt.savefig(buffer)
     plt.close()
@@ -192,7 +192,7 @@ class Graphing(commands.Cog):
         return await ctx.send(file=image)
 
     @commands.command(
-        name="linegraph", 
+        name="linegraph",
         description=(
             "Plots a line-graph based on the data points that you input\n"
             "Accepts only numerical data-points\n"
@@ -208,7 +208,7 @@ class Graphing(commands.Cog):
         return await ctx.send(file=image)
 
     @commands.command(
-        name="quadratic", 
+        name="quadratic",
         description=(
             "Plots a quadratic-line-graph based on the data points that you input\n"
             "Accepts only numerical `a, b, c` values\n"
@@ -222,7 +222,7 @@ class Graphing(commands.Cog):
         return await ctx.send(file=image)
 
     @commands.command(
-        name="linear", 
+        name="linear",
         description=(
             "Plots a linear-line-graph based on the data points that you input\n"
             "Accepts only numerical `m, b` values\n"
@@ -236,8 +236,8 @@ class Graphing(commands.Cog):
         return await ctx.send(file=image)
 
     @commands.command(
-        name="equation", 
-        description="Graphs your equation\nEx: `%eq 2x+1 ; %eq 2x^2 + 4x -3`", 
+        name="equation",
+        description="Graphs your equation\nEx: `%eq 2x+1 ; %eq 2x^2 + 4x -3`",
         aliases=["eq"]
     )
     @commands.cooldown(1, 5, commands.BucketType.user)

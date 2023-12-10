@@ -22,7 +22,7 @@ time_regex = re.compile(r"(\d{1,5}(?:[.,]?\d{1,5})?)([smhd])")
 time_dict = {"h":3600, "s":1, "m":60, "d":86400}
 
 class TimeConverter(commands.Converter):
-    
+
     async def convert(self, ctx, argument):
         status   = True
         argument = argument.lower()
@@ -70,7 +70,7 @@ class HelpPaginator(menus.ListPageSource):
         )
         embed.set_thumbnail(url=self.PyBot.user.avatar_url)
         embed.set_footer(
-            text=f"Requested by {self.ctx.author.name} •  page {menu.current_page+1}/{self.get_max_pages()}", 
+            text=f"Requested by {self.ctx.author.name} •  page {menu.current_page+1}/{self.get_max_pages()}",
             icon_url=self.ctx.author.avatar_url,
         )
         return embed
@@ -97,7 +97,7 @@ class Utility(commands.Cog):
         return online, idle, dnd, offline
 
     @commands.command(
-        name="help", 
+        name="help",
         description="Help command to provide information on command usage and description"
     )
     async def help(self, ctx, *, command: str = None):
@@ -119,15 +119,15 @@ class Utility(commands.Cog):
             embed = discord.Embed(
                 title = "%" + command.qualified_name,
                 description = f'''
-**Usage** 
+**Usage**
 ```powershell\n%{command.qualified_name} {command.signature}\n```
 **Aliases**
 `{", ".join(command.aliases) if command.aliases else "no aliases"}`
-''', 
+''',
                 color = discord.Color.gold()
             )
             embed.add_field(
-                name = "━━━━━ Description ━━━━━", 
+                name = "━━━━━ Description ━━━━━",
                 value = command.description or "-"
             )
 
@@ -146,7 +146,7 @@ class Utility(commands.Cog):
 
         d, h, m, s = await self.PyBot.uptime()
         embed = discord.Embed(
-            title='Info', 
+            title='Info',
             description=f'''
 PyBot • bot v1.2
 ━━━━━━━━━━━━━━
@@ -158,7 +158,7 @@ PyBot • bot v1.2
     • Cogs: `{len(self.PyBot.cogs)}`
 ━━━━━━━━━━━━━━
 **[Website](https://tom-the-bomb.github.io/Pybot-/)** | **[Invite](https://dsc.gg/pybot)**
-            ''', 
+            ''',
             color=discord.Color.gold()
         )
         embed.set_thumbnail(url=self.PyBot.user.avatar_url)
@@ -167,7 +167,7 @@ PyBot • bot v1.2
         embed.add_field(name='📨 - Command Count - ', value=len([c for c in self.PyBot.walk_commands() if c.cog and c.cog.qualified_name not in self.hidden_cogs]), inline=False)
         return await ctx.send(embed=embed)
 
-    
+
     @commands.command(name="ping", description="Sends the bot's latency")
     async def ping(self, ctx):
         return await ctx.send(f"**WS-Latency:** `{round(self.PyBot.latency*1000)}.0 ms`")
@@ -176,7 +176,7 @@ PyBot • bot v1.2
     async def uptime(self, ctx):
         d, h, m, s = await self.PyBot.uptime()
         return await ctx.send(f"**Uptime:** `{d} days, {h} hrs, {m} mins, {s} sec`")
-    
+
     @commands.command(name="avatar", aliases=["pfp", "av"], description="shows a member's avatar")
     async def avatar(self, ctx, member: discord.Member = None):
         member = member or ctx.author
@@ -225,9 +225,9 @@ PyBot • bot v1.2
     async def invite(self, ctx):
 
         embed = discord.Embed(
-            title = "Invite the bot to your server!", 
-            description = "**[Invite Url](https://dsc.gg/pybot)**", 
-            color = discord.Color.gold(), 
+            title = "Invite the bot to your server!",
+            description = "**[Invite Url](https://dsc.gg/pybot)**",
+            color = discord.Color.gold(),
             timestamp = dt.utcnow(),
         )
         embed.set_thumbnail(url=self.PyBot.user.avatar_url)
@@ -245,30 +245,30 @@ PyBot • bot v1.2
         return await ctx.send(embed=embed)
 
     @commands.command(
-        name="userinfo", 
-        description="Provides info on a user", 
+        name="userinfo",
+        description="Provides info on a user",
         aliases = ["ui", "whois", "profile"]
     )
     async def userinfo(self, ctx, member: discord.Member = None):
         m = member or ctx.author
         conv = {
-            'hypesquad_bravery'   : "<:bravery:826088806787973131>", 
-            'hypesquad_balance'   : "<:balance:826088836043636746>", 
-            'hypesquad_brilliance': "<:brilliance:826087059306709003>", 
-            'early_supporter'     : "<:supporter:826088864821149696>", 
-            'verified_bot_developer': "<:VerifiedDeveloper:726578447232532530>", 
-            'partner'             : "<:partner:826090409074622464>", 
-            'staff'               : "<:staff:826091741509320764>", 
-            'bug_hunter'          : "<:bughunter:826092076630016050>", 
+            'hypesquad_bravery'   : "<:bravery:826088806787973131>",
+            'hypesquad_balance'   : "<:balance:826088836043636746>",
+            'hypesquad_brilliance': "<:brilliance:826087059306709003>",
+            'early_supporter'     : "<:supporter:826088864821149696>",
+            'verified_bot_developer': "<:VerifiedDeveloper:726578447232532530>",
+            'partner'             : "<:partner:826090409074622464>",
+            'staff'               : "<:staff:826091741509320764>",
+            'bug_hunter'          : "<:bughunter:826092076630016050>",
             'bug_hunter_level_2'  : "<:bughunter2:826092998860472370>",
-            'verified_bot'        : "<:verified:826092596798423070>", 
+            'verified_bot'        : "<:verified:826092596798423070>",
             'system'              : "<:system:826093796559159336>",
             'hypesquad'           : "<:hypesquad:832645419083235348>"
         }
         status = {
-            discord.Status.online:'<:status_online:596576749790429200>', 
-            discord.Status.offline:'<:status_offline:596576752013279242>', 
-            discord.Status.dnd:'<:status_dnd:596576774364856321>', 
+            discord.Status.online:'<:status_online:596576749790429200>',
+            discord.Status.offline:'<:status_offline:596576752013279242>',
+            discord.Status.dnd:'<:status_dnd:596576774364856321>',
             discord.Status.idle:'<:status_idle:596576773488115722>'
         }
         badges = [conv[flag[0]] for flag in m.public_flags if flag[1] and flag[0] != "team_user"]
@@ -277,7 +277,7 @@ PyBot • bot v1.2
         nitro = "<:nitro:826088845735886848>" if m.is_avatar_animated() else ""
         bot = "<:bot:826535132848193556>" if m.bot else ""
         embed = discord.Embed(
-            title = str(m), 
+            title = str(m),
             description = (
                 f'''
 {" ".join(badges)} {boost} {nitro} {bot} {status[m.status]}
@@ -295,7 +295,7 @@ PyBot • bot v1.2
 **━━━━━━━━\tRoles\t━━━━━━━━**
 {"  •  ".join(roles)}
                 '''
-            ), 
+            ),
             color = m.color
         )
         embed.set_thumbnail(url=m.avatar_url)
@@ -338,8 +338,8 @@ PyBot • bot v1.2
         except Exception as e:
             return await ctx.send(f"An error has occured:\n`{e}`")
         return await ctx.reply(embed= discord.Embed(
-            description=f"**Shortened url:**\n{link}", 
-        ), 
+            description=f"**Shortened url:**\n{link}",
+        ),
         allowed_mentions= discord.AllowedMentions.none()
         )
 
@@ -348,7 +348,7 @@ PyBot • bot v1.2
     async def pprint(self, ctx, *, code: codeblocks.codeblock_converter):
 
         code = code.content
-        
+
         j = json.loads(code)
         j = json.dumps(j, indent=4, sort_keys=True)
         return await ctx.send(f"```json\n{j or '-'}\n```")
@@ -381,7 +381,7 @@ PyBot • bot v1.2
                             file = discord.File(
                                 fp = data,
                                 filename = "code.png"
-                            ), 
+                            ),
                             allowed_mentions = discord.AllowedMentions.none()
                         )
                     else:

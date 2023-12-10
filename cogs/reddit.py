@@ -13,15 +13,15 @@ class reddit(commands.Cog):
 
             client_id     = self.reddit_config["ID"],
             client_secret = self.reddit_config["SECRET"],
-            password      = self.reddit_config["PASSWORD"], 
-            user_agent    = self.reddit_config["AGENT"], 
+            password      = self.reddit_config["PASSWORD"],
+            user_agent    = self.reddit_config["AGENT"],
             username      = self.reddit_config["USERNAME"],
         )
         self.base = "https://reddit.com"
         self.imgur = 'https://i.imgur.com/'
 
     @commands.command(
-        name="progmeme", 
+        name="progmeme",
         aliases = ['progmemes', 'codingmemes', 'codingmeme'],
         description = "Sends a programming meme from reddit\n\\*insert laugh here\\*",
     )
@@ -44,7 +44,7 @@ class reddit(commands.Cog):
         if 'i.redd.it' in submission.url or self.imgur in submission.url:
             embed.set_image(url=submission.url)
             return await ctx.send(embed=embed)
-           
+
         else:
 
             if len(submission.selftext) > 2048:
@@ -55,7 +55,7 @@ class reddit(commands.Cog):
                 return await ctx.send(embed=embed)
 
     @commands.command(
-        name="python", 
+        name="python",
         aliases = ["reddit", "py"],
         description = "Sends posts from r/python",
     )
@@ -77,7 +77,7 @@ class reddit(commands.Cog):
         if 'i.redd.it' in submission.url or self.imgur in submission.url:
             embed.set_image(url=submission.url)
             return await ctx.send(embed=embed)
-           
+
         else:
 
             if len(submission.selftext) > 2048:
@@ -86,6 +86,6 @@ class reddit(commands.Cog):
             else:
                 embed.description = f'{submission.selftext}'
                 return await ctx.send(embed=embed)
-        
+
 def setup(client):
     client.add_cog(reddit(client))

@@ -13,7 +13,7 @@ class TagsPaginator(menus.ListPageSource):
 
     async def format_page(self, menu: menus.Menu, page):
         embed = discord.Embed(
-            title=f"- Tags in {self.ctx.guild.name} -", 
+            title=f"- Tags in {self.ctx.guild.name} -",
             description = " • " + "\n • ".join(page[2:])
         )
         embed.set_footer(text=f"Page {menu.current_page+1}/{self.get_max_pages()}")
@@ -30,8 +30,8 @@ class TagSystem(commands.Cog):
         self.Tags = self.cluster["PyBot"]["Tag-system"]
 
     @commands.group(
-        name = "tag", 
-        description = "Tag-system for tagging info", 
+        name = "tag",
+        description = "Tag-system for tagging info",
         invoke_without_command=True
     )
     @commands.cooldown(1, 5, commands.BucketType.user)
@@ -47,12 +47,12 @@ class TagSystem(commands.Cog):
             )
         else:
             return await ctx.send(
-                content = tag[1], 
+                content = tag[1],
                 allowed_mentions = discord.AllowedMentions.none()
             )
 
     @tag.command(
-        name = "create", 
+        name = "create",
         description = "Creates a tag",
         aliases = ["add"],
     )
@@ -68,7 +68,7 @@ class TagSystem(commands.Cog):
 
         if guild.get(name):
             return await ctx.send("Oops looks like that tag already exists!")
-        
+
         await ctx.send("What do you want the content of the tag to be? `Type it in the chat`")
 
         def check(m):
@@ -81,7 +81,7 @@ class TagSystem(commands.Cog):
 
         try:
             await self.Tags.update_one(
-                {"_guild_id_": ctx.guild.id}, 
+                {"_guild_id_": ctx.guild.id},
                 {
                     "$set": {
                         name: (ctx.author.id, content.content)
@@ -95,8 +95,8 @@ class TagSystem(commands.Cog):
             )
 
     @tag.command(
-        name="edit", 
-        description="Edits an existing tag", 
+        name="edit",
+        description="Edits an existing tag",
     )
     @commands.cooldown(1, 7, commands.BucketType.user)
     async def edit(self, ctx, *, tag: str):
@@ -124,7 +124,7 @@ class TagSystem(commands.Cog):
 
         try:
             await self.Tags.update_one(
-                {"_guild_id_": ctx.guild.id}, 
+                {"_guild_id_": ctx.guild.id},
                 {
                     "$set": {
                         tag: (raw[0], content.content)
@@ -147,7 +147,7 @@ class TagSystem(commands.Cog):
         guild = await self.Tags.find_one(
             {"_guild_id_": ctx.guild.id}
         )
-        
+
         raw = guild.get(tag)
         if not raw:
             return await ctx.send("Oops looks like that tag does not exist!")
@@ -157,7 +157,7 @@ class TagSystem(commands.Cog):
 
         try:
             await self.Tags.update_one(
-                {"_guild_id_": ctx.guild.id}, 
+                {"_guild_id_": ctx.guild.id},
                 {"$unset": {tag: ""}}
             )
             return await ctx.send(f"Tag `{tag}` deleted successfully.")
@@ -175,15 +175,15 @@ class TagSystem(commands.Cog):
         guild = await self.Tags.find_one(
             {"_guild_id_": ctx.guild.id}
         )
-        
+
         raw = guild.get(tag)
         if not raw:
             return await ctx.send("Oops looks like that tag does not exist!")
-        
+
         owner = ctx.guild.get_member(raw[0])
 
         embed = discord.Embed(
-            title=f"Tag | {tag}", 
+            title=f"Tag | {tag}",
             description=f"```ini\n[ Owner ] : {owner}\n[ Name ]  : {tag}\n[ Usage ] : %tag {tag}\n```"
         )
         return await ctx.send(embed=embed)

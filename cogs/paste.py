@@ -19,16 +19,16 @@ class Paste(commands.Cog):
 
     async def format_extension(self, language):
         conv = {
-            "python": "py", 
-            "javascript": "js", 
+            "python": "py",
+            "javascript": "js",
             "c++": "cpp",
             "csharp": "cs",
-            "kotlin": "kts", 
-            "fsharp": "fs", 
-            "rust": "rs", 
-            "typescript": "ts", 
-            "haskell": "hs", 
-            "brainfuck": "bf", 
+            "kotlin": "kts",
+            "fsharp": "fs",
+            "rust": "rs",
+            "typescript": "ts",
+            "haskell": "hs",
+            "brainfuck": "bf",
             "markdown": "md"
         }
         ext = conv.get(language.lower())
@@ -51,12 +51,12 @@ class Paste(commands.Cog):
         }
         async with ClientSession() as session:
             async with session.post(
-                url = self.gist_url, 
-                headers = headers, 
-                params = params, 
+                url = self.gist_url,
+                headers = headers,
+                params = params,
                 data = json.dumps(payload)
             ) as r:
-                
+
                 if r.status in range(200, 299):
                     return await r.json()
 
@@ -76,19 +76,19 @@ class Paste(commands.Cog):
                     return await r.json()
 
     @commands.command(
-        name="mystbin", 
+        name="mystbin",
         aliases=["myst", "mpaste", 'paste'],
         description="Pastes provided code in mystbin and returns the link"
     )
     @commands.cooldown(1, 15, commands.BucketType.user)
     async def mystbin(self, ctx, *, code: codeblocks.codeblock_converter):
-        
+
         code = code.content
-            
+
         res = await self.paste_mystbin(code)
         url = f"https://mystb.in/{res['pastes'][0]['id']}"
         embed = discord.Embed(
-            title = "Pasted code | Mystbin.in", 
+            title = "Pasted code | Mystbin.in",
             description = f"`URL:` {url}",
             url = url,
             timestamp = dt.utcnow(),
@@ -97,7 +97,7 @@ class Paste(commands.Cog):
 
     @commands.command(
         name="gist",
-        description="Creates a github gist with your provided code", 
+        description="Creates a github gist with your provided code",
         aliases=["gistpaste", "gitpaste", "creategist"]
     )
     @commands.cooldown(1, 60, commands.BucketType.user)
@@ -109,7 +109,7 @@ class Paste(commands.Cog):
 
         res = await self.create_gist(ctx, lang, code)
         embed = discord.Embed(
-            title = "New gist created", 
+            title = "New gist created",
             description = (
                 f'''
 ```ini
@@ -123,8 +123,8 @@ class Paste(commands.Cog):
 **[Push Url]({res["git_push_url"]})**
 **[Pull Url]({res["git_pull_url"]})**
 '''
-            ), 
-            url = res["html_url"], 
+            ),
+            url = res["html_url"],
             timestamp = dt.utcnow()
         )
         embed.set_footer(text="Created at", icon_url=self.PyBot.user.avatar_url)

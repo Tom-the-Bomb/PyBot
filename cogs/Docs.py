@@ -77,29 +77,29 @@ class Documentation(commands.Cog):
                 url="https://docs.sqlalchemy.org/en/14",
             ),
             "wavelink": Docs(
-                url="https://wavelink.readthedocs.io/en/latest/", 
+                url="https://wavelink.readthedocs.io/en/latest/",
             ),
             "motor": Docs(
-                url="https://motor.readthedocs.io/en/stable/", 
+                url="https://motor.readthedocs.io/en/stable/",
             ),
             "praw": Docs(
-                url="https://praw.readthedocs.io/en/latest/", 
+                url="https://praw.readthedocs.io/en/latest/",
             ),
             "twitchio": Docs(
-                url="https://twitchio.readthedocs.io/en/latest/",  
+                url="https://twitchio.readthedocs.io/en/latest/",
                 aliases=("twitch",)
             ),
             "ipython": Docs(
-                url="https://ipython.readthedocs.io/en/stable/",  
-            ), 
+                url="https://ipython.readthedocs.io/en/stable/",
+            ),
             "sympy": Docs(
-                url="https://docs.sympy.org/latest/",   
-            ), 
+                url="https://docs.sympy.org/latest/",
+            ),
             "scipy": Docs(
-                url="https://docs.scipy.org/doc/scipy/reference", 
+                url="https://docs.scipy.org/doc/scipy/reference",
             ),
             "opencv": Docs(
-                url="https://opencv-python.readthedocs.io/en/latest/", 
+                url="https://opencv-python.readthedocs.io/en/latest/",
                 aliases=("cv", "cv2")
             ),
             "quart": Docs(
@@ -109,33 +109,33 @@ class Documentation(commands.Cog):
                 url="https://jinja.palletsprojects.com/en/3.0.x/"
             ),
             "c": Docs(
-                url="c", 
+                url="c",
                 aliases=("clang",)
             ),
             "cpp": Docs(
-                url="cpp", 
+                url="cpp",
                 aliases=("cplusplus", "c++")
-            ), 
+            ),
             "sly": Docs(
                 url="https://sly.readthedocs.io/en/latest/"
             ),
             "rply": Docs(
                 url="https://rply.readthedocs.io/en/latest/"
-            ), 
+            ),
             "lark": Docs(
                 url="https://lark-parser.readthedocs.io/en/latest/"
             )
         }
 
     @commands.group(
-        name = "docs", 
+        name = "docs",
         description = r'''
         Quick search in the python-3 or a library docs for the thing you're looking for.
         Optional argument: [library] to search in a lib-docs instead of python
         • Python docs : `%docs py str.split` | `%docs print`
         • Library docs: `%docs requests get` | `%docs dpy ctx.send`...
-        ''', 
-        invoke_without_command = True, 
+        ''',
+        invoke_without_command = True,
         aliases = ["doc", "documentation", "rtfm", "rtfd"]
     )
     @commands.cooldown(1, 3, commands.BucketType.user)

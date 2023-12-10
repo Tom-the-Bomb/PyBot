@@ -16,26 +16,26 @@ import markdownify
 from jishaku import codeblocks
 
 class Piston:
-    
+
     def __init__(self, url = "https://emkc.org/api/v1/piston/"):
 
         self.api_url = url
         self.headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 
     async def MakeRequest(self, language: str, code: str) -> dict:
-        
+
         payload = json.dumps(
             {
-                "source": code, 
+                "source": code,
                 "language": language
             }
         )
-        async with ClientSession() as session: 
+        async with ClientSession() as session:
             async with session.post("https://emkc.org/api/v1/piston/execute", data=payload) as r:
                 if r.status == 400:
                     return False
                 return await r.json()
-    
+
     async def parse_request(self, raw_lang: str, response: dict):
         _        = response.get("ran")
         language = response["language"]
@@ -69,28 +69,28 @@ class Eval(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.languages = [
-            "bash", "brainfuck", "cjam", 
-            "clojure", "coffeescript", "cow", 
-            "crystal", "dart", "dash", 
-            "deno", "dotnet", "dragon", 
-            "elixir", "emacs", "erlang", 
-            "gawk", "gcc", "go", 
-            "golfscript", "groovy", "haskell", 
-            "java", "jelly", "julia", 
-            "kotlin", "lisp", "lolcode", 
-            "lua", "mono", "nasm", 
-            "nim", "node", "ocaml", 
-            "osabie", "paradoc", 
-            "pascal", "perl", "php", 
-            "ponylang", "prolog", "pure", 
-            "python", "rockstar", "ruby", 
-            "rust", "scala", "swift", 
+            "bash", "brainfuck", "cjam",
+            "clojure", "coffeescript", "cow",
+            "crystal", "dart", "dash",
+            "deno", "dotnet", "dragon",
+            "elixir", "emacs", "erlang",
+            "gawk", "gcc", "go",
+            "golfscript", "groovy", "haskell",
+            "java", "jelly", "julia",
+            "kotlin", "lisp", "lolcode",
+            "lua", "mono", "nasm",
+            "nim", "node", "ocaml",
+            "osabie", "paradoc",
+            "pascal", "perl", "php",
+            "ponylang", "prolog", "pure",
+            "python", "rockstar", "ruby",
+            "rust", "scala", "swift",
             "typescript", "vlang", "yeethon", "zig"
         ]
 
     @commands.command(
-        name="eval", 
-        description="compiles code in the language specified -> languages include: python, js, c, c++, go and many more", 
+        name="eval",
+        description="compiles code in the language specified -> languages include: python, js, c, c++, go and many more",
         aliases=["compile", "exec", "execute"],
     )
     @commands.cooldown(1, 10, commands.BucketType.user)
@@ -138,7 +138,7 @@ class Eval(commands.Cog):
         code = code.content
 
         html = markdown.markdown(code)
-        if len(html) > 1980: 
+        if len(html) > 1980:
             with StringIO() as stream:
                 stream.write(html)
                 stream.seek(0)
@@ -153,7 +153,7 @@ class Eval(commands.Cog):
         code = code.content
 
         md = markdownify.markdownify(code)
-        if len(md) > 1980: 
+        if len(md) > 1980:
             with StringIO() as stream:
                 stream.write(md)
                 stream.seek(0)
